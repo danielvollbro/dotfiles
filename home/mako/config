@@ -1,6 +1,15 @@
 default-timeout=5000
 ignore-timeout=0
-border-radius=8
-background-color=#1e1e2eee
-text-color=#cdd6f4
-border-color=#89b4fa
+border-radius=12
+background-color=#1a1210ee
+text-color=#e8ddd0
+border-color=#d68f5c
+border-size=2
+max-icon-size=48
+outer-margin=12
+padding=12
+font=JetBrainsMono Nerd Font 11
+
+[urgency=high]
+border-color=#e07a5f
+text-color=#ffddd2
