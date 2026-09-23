@@ -191,7 +191,7 @@
   # Warm dark GTK theme
   programs.dconf.enable = true;
   qt.enable = true;
-  qt.platformTheme = "qtct";
+  qt.platformTheme = "qt5ct";
   qt.style = "kvantum";
 
   xdg.portal.enable = true;
