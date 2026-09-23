@@ -9,6 +9,11 @@
     ripgrep
     fd
     btop
+    rofi
+    swww
+    hyprlock
+    hypridle
+    papirus-icon-theme
     (pkgs.writeShellScriptBin "laptop-screen-watchdog" ''
       # Robust laptop-screen watchdog: polls every 1s. If eDP-1 is disabled
       # while NO external monitor is connected, force it back on. Also
@@ -59,4 +64,11 @@
   xdg.configFile."waybar/style.css".source = ../home/waybar/style.css;
   xdg.configFile."mako/config".source = ../home/mako/config;
   xdg.configFile."kanshi/config".source = ../home/kanshi/config;
+  xdg.configFile."rofi/config.rasi".source = ../home/rofi/config.rasi;
+  xdg.configFile."rofi/rofi.warm.rasi".source = ../home/rofi/rofi.warm.rasi;
+  xdg.configFile."hypr/hyprlock.conf".source = ../home/hypr/hyprlock.conf;
+  xdg.configFile."hypr/hypridle.conf".source = ../home/hypr/hypridle.conf;
+
+  # Wallpaper (used by swww + hyprlock)
+  xdg.configFile."wallpapers/warm-dark.png".source = ../home/wallpapers/warm-dark.png;
 }

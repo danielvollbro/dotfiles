@@ -1,0 +1,65 @@
+* {
+  bg: #1a1210ee;
+  bg-alt: #241a15;
+  fg: #e8ddd0;
+  accent: #d68f5c;
+  text-selected: #1a1210;
+  border-color: rgba(214, 144, 92, 0.4);
+
+  background-color: transparent;
+  text-color: @fg;
+  font: "JetBrainsMono Nerd Font 13";
+}
+
+window {
+  width: 620px;
+  background-color: @bg;
+  border: 1px;
+  border-color: @border-color;
+  border-radius: 14px;
+  padding: 18px;
+  location: center;
+}
+
+inputbar {
+  children: [ prompt, entry ];
+  background-color: @bg-alt;
+  border-radius: 10px;
+  padding: 12px;
+  margin: 0 0 14px 0;
+}
+
+prompt {
+  text-color: @accent;
+  padding: 0 10px 0 0;
+}
+
+entry {
+  placeholder: "Sok...";
+  placeholder-color: #8a7462;
+}
+
+listview {
+  lines: 8;
+  scrollbar: false;
+  spacing: 4px;
+}
+
+element {
+  border-radius: 10px;
+  padding: 10px;
+}
+
+element selected.normal {
+  background-color: @accent;
+  text-color: @text-selected;
+  border-radius: 10px;
+}
+
+element-text {
+  vertical-align: 0.5;
+}
+element-icon {
+  size: 28px;
+  padding: 0 10px 0 0;
+}

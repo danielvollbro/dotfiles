@@ -158,7 +158,10 @@
     # Hyprland requirements
     kitty
     waybar
-    wofi
+    rofi
+    swww
+    hyprlock
+    hypridle
 
     # AI
     claude-code
@@ -184,6 +187,12 @@
   ];
 
   fonts.fontconfig.enable = true;
+
+  # Warm dark GTK theme
+  programs.dconf.enable = true;
+  qt.enable = true;
+  qt.platformTheme = "qtct";
+  qt.style = "kvantum";
 
   xdg.portal.enable = true;
   xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
