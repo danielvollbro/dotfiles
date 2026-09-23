@@ -31,7 +31,9 @@
       WAYBAR_LOCK=/tmp/waybar-watchdog.lock
 
       while true; do
-        sleep 1
+        # Poll every 5s instead of 1s: still catches screen swaps quickly,
+        # but ~80% fewer subprocess spawns keeps the CPU free to idle.
+        sleep 5
         ext_connected=0
         for c in /sys/class/drm/card*-DP-*/status; do
           [ "$(cat "$c" 2>/dev/null)" = "connected" ] && ext_connected=1
