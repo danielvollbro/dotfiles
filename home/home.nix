@@ -69,6 +69,14 @@
   xdg.configFile."hypr/hyprlock.conf".source = ../home/hypr/hyprlock.conf;
   xdg.configFile."hypr/hypridle.conf".source = ../home/hypr/hypridle.conf;
 
-  # Wallpaper (used by awww + hyprlock)
-  xdg.configFile."wallpapers/warm-dark.png".source = ../home/wallpapers/warm-dark.png;
+  # Wallpaper (used by swww + hyprlock)
+  xdg.configFile."wallpapers/japan-night.jpg".source = ../home/wallpapers/japan-night.jpg;
+  xdg.configFile."waybar/sysinfo.sh" = {
+    source = ../home/waybar/sysinfo.sh;
+    executable = true;
+  };
+  xdg.configFile."waybar/idle_state.sh" = {
+    source = ../home/waybar/idle_state.sh;
+    executable = true;
+  };
 }
