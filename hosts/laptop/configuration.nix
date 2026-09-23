@@ -124,7 +124,7 @@
     ];
   };
 
-  # SSH access (declarative; replaces the old UFW-based setup under Omarchy)
+  # SSH access
   services.openssh = {
     enable = true;
     settings = {
