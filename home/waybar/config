@@ -25,7 +25,8 @@
 		"format-disconnected": "󰤮 No signal"
 	},
 	"pulseaudio": {
-		"format": " {volume}% "
+		"format": " {volume}% ",
+		"format-muted": "󰝟 muted"
 	},
 	"tray": {
 		"spacing": 10
