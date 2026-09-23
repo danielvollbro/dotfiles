@@ -74,7 +74,7 @@
   users.users."daniel" = {
     isNormalUser = true;
     description = "Daniel Vollbro";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "input" "video" ];
     packages = with pkgs; [];
   };
 
@@ -84,6 +84,12 @@
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
   environment.systemPackages = with pkgs; [
+    # System
+    pkgs.brightnessctl
+    pkgs.wireplumber
+    pkgs.playerctl
+    pkgs.wev
+
     # Hyperland requirements
     pkgs.kitty
     pkgs.waybar
