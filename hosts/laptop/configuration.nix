@@ -130,21 +130,32 @@
     playerctl
     mako
     libva-utils
+    yazi
+    wget
+    xclip
+    kanshi
 
     # Hyprland requirements
     kitty
     waybar
     wofi
+
+    # AI
+    claude-code
   
     # Software
     vim
+    neovim
     firefox-bin
     moonlight-qt
     discord
+    bitwarden-desktop
 
     # Development
     git
     go
+    gopls
+    docker
   ];
 
   fonts.packages = with pkgs; [
