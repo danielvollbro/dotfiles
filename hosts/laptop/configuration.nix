@@ -23,6 +23,13 @@
   boot.consoleLogLevel = 3;
   boot.initrd.verbose = false;
 
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+  };
+
+  services.blueman.enable = true;
+
   systemd.services.dhcpcd.serviceConfig = {
     StandardOutput = "journal";
     StandardError = "journal";
@@ -67,6 +74,41 @@
     variant = "";
   };
 
+  # Battery management
+  services.tlp = {
+    enable = true;
+    settings = {
+      CPU_SCALING_GOVERNOR_ON_AC = "performance";
+      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+      START_CHARGE_THRESH_BAT0 = 50;
+      STOP_CHARGE_THRESH_BAT0 = 80;
+    };
+  };
+  services.power-profiles-daemon.enable = false;
+
+  # What happens when you close the lid
+  services.logind.settings.Login.HandleLidSwitch = "hibernate";
+  services.logind.settings.Login.HandleLidSwitchExternalPower = "ignore";
+
+  # SSD improvements
+  services.fstrim.enable = true;
+
+  # Firmware update support
+  services.fwupd.enable = true;
+
+  # Intel Thermald
+  services.thermald.enable = true;
+
+  # Swap in RAM
+  zramSwap.enable = true;
+
+  # Auto garbage collect
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 7d";
+  };
+
   # Configure console keymap
   console.keyMap = "sv-latin1";
 
@@ -88,7 +130,7 @@
     pkgs.brightnessctl
     pkgs.wireplumber
     pkgs.playerctl
-    pkgs.wev
+    pkgs.mako
 
     # Hyperland requirements
     pkgs.kitty
