@@ -1,56 +1,69 @@
 {
   "layer": "top",
   "position": "top",
-  "height": 34,
-  "margin-top": 6,
-  "margin-left": 10,
-  "margin-right": 10,
-  "exclusive": true,
+  "height": 30,
+  "margin-top": 0,
+  "margin-left": 0,
+  "margin-right": 0,
 
-  "modules-left": ["hyprland/workspaces", "hyprland/window"],
-  "modules-center": ["clock"],
-  "modules-right": ["tray", "pulseaudio", "network", "battery", "idle_inhibitor"],
+  "modules-left": ["custom/host", "hyprland/workspaces", "hyprland/window"],
+  "modules-center": ["custom/sep", "custom/sysinfo", "custom/sep"],
+  "modules-right": ["tray", "pulseaudio", "network", "battery", "custom/idle", "clock"],
 
+  "custom/host": {
+    "format": "DV//13",
+    "tooltip": false
+  },
+  "custom/sep": {
+    "format": "|",
+    "tooltip": false
+  },
+  "custom/sysinfo": {
+    "exec": "~/.config/waybar/sysinfo.sh",
+    "interval": 3,
+    "tooltip": false
+  },
+  "custom/idle": {
+    "format": "{}",
+    "exec": "~/.config/waybar/idle_state.sh",
+    "interval": 5,
+    "return-type": "json",
+    "tooltip": false
+  },
   "hyprland/workspaces": {
-    "format": "{name}",
+    "format": "{name:02}",
     "on-click": "activate",
-    "sort-by-number": true
+    "sort-by-number": true,
+    "format-icons": { "active": "01" }
   },
   "hyprland/window": {
-    "max-length": 40,
+    "max-length": 34,
     "separate-outputs": true
   },
   "clock": {
-    "format": "  {:%H:%M}",
-    "format-alt": "  {:%A %d %B %Y}",
-    "tooltip-format": "<tt><small>{calendar}</small></tt>",
-    "calendar": { "format": { "today": "<span color='#f0c987'><b>{}</b></span>" } }
+    "format": "{:%H:%M:%S}  {:%d.%m.%y} {:%a}",
+    "interval": 1,
+    "tooltip": false
   },
   "battery": {
     "states": { "warning": 25, "critical": 10 },
-    "format": "{icon} {capacity}%",
-    "format-charging": " {capacity}%",
-    "format-icons": ["", "", "", "", ""],
+    "format": "{capacity}%",
+    "format-charging": "PWR AC",
     "tooltip-format": "{timeTo}"
   },
   "network": {
-    "format-wifi": "󰤨 {essid}",
-    "format-ethernet": "󰈀 wired",
-    "format-disconnected": "󰤭 offline",
+    "format-wifi": "{essid}",
+    "format-ethernet": "LINK",
+    "format-disconnected": "OFFLINE",
     "tooltip-format": "{ifname}: {ipaddr}"
   },
   "pulseaudio": {
-    "format": "{icon} {volume}%",
-    "format-muted": "󰝟 muted",
-    "format-icons": { "default": ["󰕿", "󰖀", "󰕾"] },
+    "format": "{volume}%",
+    "format-muted": "MUTE",
     "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
   },
   "tray": {
-    "icon-size": 16,
-    "spacing": 8
-  },
-  "idle_inhibitor": {
-    "format": "{icon}",
-    "format-icons": { "activated": "󰅶", "deactivated": "󰾪" }
+    "icon-size": 14,
+    "spacing": 6
   }
 }
