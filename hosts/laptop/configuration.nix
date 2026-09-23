@@ -35,6 +35,10 @@
     LIBVA_DRIVER_NAME = "iHD";
   };
 
+  environment.shellAliases = {
+    vim = "nvim";
+  };
+
   services.blueman.enable = true;
 
   systemd.services.dhcpcd.serviceConfig = {
@@ -177,7 +181,6 @@
     claude-code
   
     # Software
-    vim
     neovim
     firefox-bin
     moonlight-qt
