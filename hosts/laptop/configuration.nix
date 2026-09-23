@@ -153,6 +153,7 @@
     wget
     xclip
     kanshi
+    grim
 
     # Hyprland requirements
     kitty
