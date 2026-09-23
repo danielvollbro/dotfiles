@@ -118,7 +118,26 @@
     description = "Daniel Vollbro";
     extraGroups = [ "wheel" "input" "video" ];
     packages = with pkgs; [];
+    openssh.authorizedKeys.keys = [
+      # hermes-agent-laptop (J.A.R.V.I.S.)
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGC5gYdLzF4jUwLYega58MkYMTPVatL0oZGvCWgJB/Ip hermes-agent-laptop"
+    ];
   };
+
+  # SSH access (declarative; replaces the old UFW-based setup under Omarchy)
+  services.openssh = {
+    enable = true;
+    settings = {
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
+      PermitRootLogin = "no";
+    };
+  };
+
+  # Only allow SSH from the Hermes agent's source IP on the 50-network
+  networking.firewall.extraCommands = ''
+    iptables -A nixos-fw -p tcp --dport 22 -s 10.0.50.20 -j ACCEPT
+  '';
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
