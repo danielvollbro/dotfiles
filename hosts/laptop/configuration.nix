@@ -97,6 +97,12 @@
   };
   services.power-profiles-daemon.enable = false;
 
+  # Touchpad
+  services.libinput = {
+    enable = true;
+    touchpad.disableWhileTyping = true;
+  };
+
   # Aggressive runtime power management (USB autosuspend, PCIe, audio codecs)
   powerManagement.powertop.enable = true;
 
@@ -207,15 +213,22 @@
   qt.platformTheme = "qt5ct";
   qt.style = "kvantum";
 
-  xdg.portal.enable = true;
-  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
+  };
 
   # Audio
-  services.pipewire.enable = true;
-  services.pipewire.pulse.enable = true;
   security.rtkit.enable = true;
-  services.pipewire.alsa.enable = true;
-  services.pipewire.alsa.support32Bit = true;
+  services.pipewire = {
+    enable = true;
+    pulse.enable = true;
+
+    alsa = {
+      enable = true;
+      support32Bit = true;
+    };
+  };
 
   services.greetd = {
     enable = true;
