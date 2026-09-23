@@ -9,6 +9,14 @@
     ripgrep
     fd
     btop
+    (pkgs.writeShellScriptBin "kanshi-laptop-reload" ''
+      # Kanshi cannot re-enable a disabled monitor on Hyprland 0.55 lua;
+      # a hyprctl reload is required after the laptop profile applies.
+      export HYPRLAND_INSTANCE_SIGNATURE=$(ls /run/user/1000/hypr/ | head -1)
+      export XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-1
+      sleep 1
+      exec ${pkgs.hyprland}/bin/hyprctl reload
+    '')
   ];
 
   programs.home-manager.enable = true;
