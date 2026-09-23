@@ -9,6 +9,5 @@ profile external2 {
 }
 
 profile laptop {
-    exec "/home/daniel/.local/bin/kanshi-laptop-reload.sh"
     output eDP-1 enable mode 3840x2160@60.00Hz scale 1.67 position 0,0
 }
