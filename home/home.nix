@@ -14,6 +14,11 @@
       # while NO external monitor is connected, force it back on. Also
       # restarts waybar if it crashed. Uses a lockfile so a slow-starting
       # waybar can't be mistaken for "missing" and spawn duplicates.
+      #
+      # NOTE: the nix-wrapped waybar binary's real process name is
+      # ".waybar-wrapped", not "waybar" -- `pgrep -x waybar` never matches
+      # it and causes an infinite spawn storm. Use `pgrep -f waybar`
+      # (substring on full cmdline) instead.
       export HYPRLAND_INSTANCE_SIGNATURE=$(ls /run/user/1000/hypr/ | head -1)
       export XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-1
       HYPRCTL=${pkgs.hyprland}/bin/hyprctl
@@ -35,7 +40,7 @@
             sleep 5
           fi
         fi
-        if ! ${pkgs.procps}/bin/pgrep -x waybar >/dev/null 2>&1; then
+        if ! ${pkgs.procps}/bin/pgrep -f waybar >/dev/null 2>&1; then
           if mkdir "$WAYBAR_LOCK" 2>/dev/null; then
             ${pkgs.waybar}/bin/waybar >/tmp/waybar.log 2>&1 &
             sleep 4
