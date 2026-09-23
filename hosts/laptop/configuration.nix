@@ -159,7 +159,7 @@
     kitty
     waybar
     rofi
-    swww
+    awww
     hyprlock
     hypridle
 

@@ -10,7 +10,7 @@
     fd
     btop
     rofi
-    swww
+    awww
     hyprlock
     hypridle
     papirus-icon-theme
@@ -69,6 +69,6 @@
   xdg.configFile."hypr/hyprlock.conf".source = ../home/hypr/hyprlock.conf;
   xdg.configFile."hypr/hypridle.conf".source = ../home/hypr/hypridle.conf;
 
-  # Wallpaper (used by swww + hyprlock)
+  # Wallpaper (used by awww + hyprlock)
   xdg.configFile."wallpapers/warm-dark.png".source = ../home/wallpapers/warm-dark.png;
 }
