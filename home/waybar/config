@@ -1,13 +1,13 @@
 {
   "layer": "top",
   "position": "top",
-  "height": 30,
+  "height": 40,
   "margin-top": 0,
   "margin-left": 0,
   "margin-right": 0,
 
   "modules-left": ["custom/host", "hyprland/workspaces", "hyprland/window"],
-  "modules-center": ["custom/sep", "custom/sysinfo", "custom/sep"],
+  "modules-center": ["custom/sep", "custom/fakestats", "custom/sep", "custom/sysinfo", "custom/sep"],
   "modules-right": ["tray", "pulseaudio", "network", "battery", "custom/idle", "clock"],
 
   "custom/host": {
@@ -18,36 +18,50 @@
     "format": "|",
     "tooltip": false
   },
+  "custom/fakestats": {
+    "format": "add some text here / this might look good / or not...",
+    "tooltip": false
+  },
   "custom/sysinfo": {
     "exec": "~/.config/waybar/sysinfo.sh",
     "interval": 3,
     "tooltip": false
   },
   "custom/idle": {
-    "format": "{}",
+    "format": "{text}",
     "exec": "~/.config/waybar/idle_state.sh",
     "interval": 5,
     "return-type": "json",
     "tooltip": false
   },
   "hyprland/workspaces": {
-    "format": "{name:02}",
+    "format": "{name}",
     "on-click": "activate",
     "sort-by-number": true,
-    "format-icons": { "active": "01" }
+    "persistent-workspaces": {
+        "01": [],
+        "02": [],
+        "03": [],
+        "04": [],
+        "05": [],
+        "06": [],
+        "07": [],
+        "08": [],
+        "09": [],
+        "10": []
+    }
   },
   "hyprland/window": {
     "max-length": 34,
     "separate-outputs": true
   },
   "clock": {
-    "format": "{:%H:%M:%S}  {:%d.%m.%y} {:%a}",
     "interval": 1,
     "tooltip": false
   },
   "battery": {
     "states": { "warning": 25, "critical": 10 },
-    "format": "{capacity}%",
+    "format": "{capacity}% ({time})",
     "format-charging": "PWR AC",
     "tooltip-format": "{timeTo}"
   },
