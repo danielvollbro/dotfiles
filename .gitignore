@@ -1,0 +1,3 @@
+wireless.env
+*.env
+secrets/
