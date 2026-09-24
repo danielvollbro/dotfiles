@@ -70,6 +70,12 @@
   xdg.configFile."rofi/rofi.warm.rasi".source = ../home/rofi/rofi.warm.rasi;
   xdg.configFile."hypr/hyprlock.conf".source = ../home/hypr/hyprlock.conf;
   xdg.configFile."hypr/hypridle.conf".source = ../home/hypr/hypridle.conf;
+  xdg.configFile."nvim/init.lua".source = ../home/nvim/init.lua;
+  xdg.configFile."nvim/after/plugins/telescope.lua".source = ../home/nvim/after/plugins/telescope.lua;
+  xdg.configFile."nvim/lua/plugins/telescope.lua".source = ../home/nvim/lua/plugins/telescope.lua;
+  xdg.configFile."nvim/lua/config/sets.lua".source = ../home/nvim/lua/config/sets.lua;
+  xdg.configFile."nvim/lua/config/remaps.lua".source = ../home/nvim/lua/config/remaps.lua;
+  xdg.configFile."nvim/lua/config/lazy.lua".source = ../home/nvim/lua/config/lazy.lua;
 
   # Wallpaper (used by swww + hyprlock)
   xdg.configFile."wallpapers/japan-night.jpg".source = ../home/wallpapers/japan-night.jpg;
