@@ -4,9 +4,24 @@ return {
     config = function()
       local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-      require('lspconfig').gopls.setup({ capabilities = capabilities })
-      require('lspconfig').dockerls.setup({ capabilities = capabilities })
-      require('lspconfig').docker_compose_language_service.setup({ capabilities = capabilities })
+      local servers = {
+        gopls = {},
+        dockerls = {},
+        docker_compose_language_service = {},
+        terraformls = {},
+        bashls = {},
+        intelephense = {},
+        html = {},
+        cssls = {},
+        ts_ls = {},
+        pyright = {},
+        nixd = {},
+        lua_ls = {},
+      }
+      for server, opts in pairs(servers) do
+        opts.capabilities = capabilities
+        require('lspconfig')[server].setup(opts)
+      end
 
       vim.api.nvim_create_autocmd('LspAttach', {
         callback = function(event)
