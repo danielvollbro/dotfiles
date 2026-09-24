@@ -4,25 +4,17 @@ return {
     config = function()
       local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
+      -- nvim 0.11+ native LSP configuration (lspconfig framework is deprecated)
       local servers = {
-        gopls = {},
-        dockerls = {},
-        docker_compose_language_service = {},
-        terraformls = {},
-        bashls = {},
-        intelephense = {},
-        html = {},
-        cssls = {},
-        ts_ls = {},
-        pyright = {},
-        jsonls = {},
-        yamlls = {},
-        nixd = {},
-        lua_ls = {},
+        'gopls', 'dockerls', 'docker_compose_language_service',
+        'terraformls', 'bashls', 'intelephense', 'html', 'cssls',
+        'ts_ls', 'pyright', 'jsonls', 'yamlls', 'nixd', 'lua_ls',
       }
-      for server, opts in pairs(servers) do
-        opts.capabilities = capabilities
-        require('lspconfig')[server].setup(opts)
+      for _, server in ipairs(servers) do
+        vim.lsp.config(server, {
+          capabilities = capabilities,
+        })
+        vim.lsp.enable(server)
       end
 
       vim.api.nvim_create_autocmd('LspAttach', {
