@@ -19,19 +19,19 @@
     gotools
     docker-language-server
     terraform-ls
-    nodePackages.bash-language-server
-    nodePackages.intelephense
-    nodePackages.typescript-language-server
-    nodePackages.vscode-langservers-extracted  # html, cssls, jsonls
-    nodePackages.pyright
+    bash-language-server
+    intelephense
+    typescript-language-server
+    vscode-langservers-extracted  # html, cssls, jsonls
+    pyright
     yaml-language-server
-    nodePackages.prettier
+    prettier
     stylua
     nixd
     lua-language-server
 
     # Formatters (conform.nvim) & nvim build deps
-    nodePackages.prettierd
+    prettierd
     ruff
     shfmt
     nixpkgs-fmt
