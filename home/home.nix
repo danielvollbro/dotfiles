@@ -14,8 +14,21 @@
     hyprlock
     hypridle
     papirus-icon-theme
+
+    # Language servers / dev tools
     gotools
     docker-language-server
+    terraform-ls
+    nodePackages.bash-language-server
+    nodePackages.intelephense
+    nodePackages.typescript-language-server
+    nodePackages.vscode-langservers-extracted  # html, cssls, jsonls
+    nodePackages.pyright
+    yaml-language-server
+    nodePackages.prettier
+    stylua
+    nixd
+    lua-language-server
     (pkgs.writeShellScriptBin "laptop-screen-watchdog" ''
       # Robust laptop-screen watchdog: polls every 1s. If eDP-1 is disabled
       # while NO external monitor is connected, force it back on. Also
