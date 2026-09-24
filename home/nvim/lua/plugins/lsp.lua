@@ -15,6 +15,8 @@ return {
         cssls = {},
         ts_ls = {},
         pyright = {},
+        jsonls = {},
+        yamlls = {},
         nixd = {},
         lua_ls = {},
       }
