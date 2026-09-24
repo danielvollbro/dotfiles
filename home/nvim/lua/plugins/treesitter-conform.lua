@@ -15,9 +15,13 @@ return {
 
       vim.api.nvim_create_autocmd('FileType', {
         pattern = parsers,
-        callback = function()
-          vim.treesitter.start()          -- highlighting
-          vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"  -- indentation
+        callback = function(args)
+          -- Only start once the parser is installed & available; nvim opens
+          -- buffers before async install finishes on first run.
+          local ok = pcall(vim.treesitter.start, args.buf)
+          if ok then
+            vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          end
         end,
       })
     end,
