@@ -1,19 +1,25 @@
 return {
   {
+    -- nvim-treesitter main branch: new API (configs module removed 2025)
     'nvim-treesitter/nvim-treesitter',
+    branch = 'main',
     build = ':TSUpdate',
     event = { 'BufReadPost', 'BufNewFile' },
-    opts = {
-      ensure_installed = {
+    config = function()
+      local parsers = {
         'go', 'gomod', 'gosum', 'terraform', 'hcl', 'dockerfile',
         'bash', 'lua', 'nix', 'python', 'html', 'css', 'javascript',
         'typescript', 'json', 'yaml', 'php',
-      },
-      highlight = { enable = true },
-      indent = { enable = true },
-    },
-    config = function(_, opts)
-      require('nvim-treesitter.configs').setup(opts)
+      }
+      require('nvim-treesitter').install(parsers)
+
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = parsers,
+        callback = function()
+          vim.treesitter.start()          -- highlighting
+          vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"  -- indentation
+        end,
+      })
     end,
   },
   {
