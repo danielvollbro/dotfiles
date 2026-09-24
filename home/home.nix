@@ -14,7 +14,6 @@
     hyprlock
     hypridle
     papirus-icon-theme
-    gopls
     gotools
     docker-language-server
     (pkgs.writeShellScriptBin "laptop-screen-watchdog" ''
