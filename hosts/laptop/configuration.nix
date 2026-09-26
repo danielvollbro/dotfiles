@@ -10,11 +10,6 @@
     ./hardware-configuration.nix
   ];
 
-  boot.kernelParams = [ "quiet" "udev.log_level=3" ];
-  boot.consoleLogLevel = 3;
-  boot.initrd.verbose = false;
-
-
   environment.shellAliases = {
     vim = "nvim";
   };

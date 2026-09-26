@@ -10,6 +10,10 @@
     efi.canTouchEfiVariables = true;
   };
 
+  boot.kernelParams = [ "quiet" "udev.log_level=3" ];
+  boot.consoleLogLevel = 3;
+  boot.initrd.verbose = false;
+
   # Set your time zone.
   time.timeZone = "Europe/Stockholm";
 
