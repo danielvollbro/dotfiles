@@ -1,9 +1,7 @@
 { pkgs, ... }:
 
 {
-  environment.systemPackages = with pkgs; [
-    rofi
-  ];
+  environment.systemPackages = with pkgs; [ rofi ];
 
   home-manager.users.daniel = { ... }: {
     xdg.configFile."rofi/config.rasi".source = ./dotfiles/config.rasi;
