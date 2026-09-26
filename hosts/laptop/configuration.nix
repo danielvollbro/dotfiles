@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   imports = [
@@ -18,6 +18,7 @@
   boot.consoleLogLevel = 3;
   boot.initrd.verbose = false;
 
+  hardware.enableRedistributableFirmware = true;
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
@@ -115,9 +116,6 @@
 
   # Firmware update support
   services.fwupd.enable = true;
-
-  # Intel Thermald
-  services.thermald.enable = true;
 
   # Swap in RAM
   zramSwap.enable = true;
