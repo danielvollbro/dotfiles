@@ -1,6 +1,8 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
+  environment.systemPackages = with pkgs; [ waybar ];
+
   home-manager.users.daniel = { ... }: {
     xdg.configFile."waybar/config".source = ./dotfiles/config;
     xdg.configFile."waybar/style.css".source = ./dotfiles/style.css;
