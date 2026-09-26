@@ -9,10 +9,6 @@
     ripgrep
     fd
     btop
-    rofi
-    awww
-    hyprlock
-    hypridle
     papirus-icon-theme
 
     # AI

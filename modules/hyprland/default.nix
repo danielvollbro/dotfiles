@@ -1,14 +1,8 @@
 { pkgs, ... }:
 
 {
-  imports = [
-    ../../modules/rofi/setup.nix
-  ];
-
   environment.systemPackages = with pkgs; [
     kitty
-    waybar
-    rofi
     awww
     hyprlock
     hypridle
