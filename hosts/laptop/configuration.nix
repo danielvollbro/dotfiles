@@ -3,6 +3,7 @@
 {
   imports = [
     ../base.nix
+    ../modules/hyprland.nix
     ./hardware-configuration.nix
   ];
 
@@ -82,7 +83,6 @@
   # SSD improvements
   services.fstrim.enable = true;
 
-
   users.users."daniel".openssh.authorizedKeys.keys = [
     # hermes-agent-laptop (J.A.R.V.I.S.)
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGC5gYdLzF4jUwLYega58MkYMTPVatL0oZGvCWgJB/Ip hermes-agent-laptop"
@@ -106,35 +106,15 @@
     kanshi
     grim
 
-    # Hyprland requirements
-    kitty
-    waybar
-    rofi
-    awww
-    hyprlock
-    hypridle
-
     # Development
     docker
   ];
-
-  fonts.packages = with pkgs; [
-    nerd-fonts.symbols-only
-    nerd-fonts.jetbrains-mono
-  ];
-
-  fonts.fontconfig.enable = true;
 
   # Warm dark GTK theme
   programs.dconf.enable = true;
   qt.enable = true;
   qt.platformTheme = "qt5ct";
   qt.style = "kvantum";
-
-  xdg.portal = {
-    enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
-  };
 
   # Audio
   security.rtkit.enable = true;
@@ -148,19 +128,7 @@
     };
   };
 
-  services.greetd = {
-    enable = true;
-    settings = {
-      default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd start-hyprland";
-      };
-    };
-  };
-
-  programs.hyprland.enable = true;
-
   # Do NOT change this value unless you have manually inspected all the changes it would make to your configuration,
   # and migrated your data accordingly.
   system.stateVersion = "26.05";
-
 }
