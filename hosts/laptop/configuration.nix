@@ -5,15 +5,6 @@
     ./hardware-configuration.nix
   ];
 
-  # Use the systemd-boot EFI boot loader.
-  boot.loader = {
-    systemd-boot = {
-      enable = true;
-      configurationLimit = 10;
-    };
-    efi.canTouchEfiVariables = true;
-  };
-
   boot.kernelParams = [ "quiet" "udev.log_level=3" ];
   boot.consoleLogLevel = 3;
   boot.initrd.verbose = false;
@@ -36,10 +27,6 @@
     LIBVA_DRIVER_NAME = "iHD";
   };
 
-  environment.shellAliases = {
-    vim = "nvim";
-  };
-
   services.blueman.enable = true;
 
   systemd.services.dhcpcd.serviceConfig = {
@@ -53,30 +40,6 @@
     userControlled = true;
     secretsFile = "/etc/nixos-secrets/wireless.env";
     networks."Wollbro_Main".pskRaw = "ext:wifi_psk";
-  };
-
-  # Set your time zone.
-  time.timeZone = "Europe/Stockholm";
-
-  # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
-
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "sv_SE.UTF-8";
-    LC_IDENTIFICATION = "sv_SE.UTF-8";
-    LC_MEASUREMENT = "sv_SE.UTF-8";
-    LC_MONETARY = "sv_SE.UTF-8";
-    LC_NAME = "sv_SE.UTF-8";
-    LC_NUMERIC = "sv_SE.UTF-8";
-    LC_PAPER = "sv_SE.UTF-8";
-    LC_TELEPHONE = "sv_SE.UTF-8";
-    LC_TIME = "sv_SE.UTF-8";
-  };
-
-  # Configure keymap in X11
-  services.xserver.xkb = {
-    layout = "se";
-    variant = "";
   };
 
   # Battery management
@@ -114,52 +77,6 @@
   # SSD improvements
   services.fstrim.enable = true;
 
-  # Firmware update support
-  services.fwupd.enable = true;
-
-  # Swap in RAM
-  zramSwap.enable = true;
-
-  # Auto garbage collect
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 7d";
-  };
-
-  # Configure console keymap
-  console.keyMap = "sv-latin1";
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users."daniel" = {
-    isNormalUser = true;
-    description = "Daniel Vollbro";
-    extraGroups = [ "wheel" "input" "video" ];
-    packages = with pkgs; [];
-    openssh.authorizedKeys.keys = [
-      # hermes-agent-laptop (J.A.R.V.I.S.)
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGC5gYdLzF4jUwLYega58MkYMTPVatL0oZGvCWgJB/Ip hermes-agent-laptop"
-    ];
-  };
-
-  # SSH access
-  services.openssh = {
-    enable = true;
-    settings = {
-      PasswordAuthentication = false;
-      KbdInteractiveAuthentication = false;
-      PermitRootLogin = "no";
-    };
-  };
-
-  # Only allow SSH from the Hermes agent's source IP on the 50-network
-  networking.firewall.extraCommands = ''
-    iptables -A nixos-fw -p tcp --dport 22 -s 10.0.50.20 -j ACCEPT
-  '';
-
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
   environment.systemPackages = with pkgs; [
     # System
     brightnessctl
@@ -168,8 +85,6 @@
     mako
     libva-utils
     yazi
-    wget
-    xclip
     kanshi
     grim
 
@@ -192,7 +107,6 @@
     bitwarden-desktop
 
     # Development
-    git
     go
     gopls
     docker
@@ -239,8 +153,12 @@
 
   programs.hyprland.enable = true;
 
+  # Only allow SSH from the Hermes agent's source IP on the 50-network
+  networking.firewall.extraCommands = ''
+    iptables -A nixos-fw -p tcp --dport 22 -s 10.0.50.20 -j ACCEPT
+  '';
+
   # Do NOT change this value unless you have manually inspected all the changes it would make to your configuration,
   # and migrated your data accordingly.
   system.stateVersion = "26.05";
-
 }

@@ -18,7 +18,21 @@
       system = "x86_64-linux";
       modules = [
         nixos-hardware.nixosModules.dell-xps-13-9370
+        ./hosts/common/configuration.nix
         ./hosts/laptop/configuration.nix
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users.daniel = import ./home/home.nix;
+        }
+      ];
+    };
+    nixosConfigurations.headless-pc = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./hosts/common/configuration.nix
+        ./hosts/headless-pc/configuration.nix
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;

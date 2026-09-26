@@ -6,13 +6,14 @@
   home.stateVersion = "26.05";
 
   home.packages = with pkgs; [
+    git
+    wget
+    xclip
+
     ripgrep
     fd
     btop
-    rofi
-    awww
-    hyprlock
-    hypridle
+
     papirus-icon-theme
 
     # Language servers / dev tools
@@ -38,6 +39,7 @@
     gcc  # builds telescope-fzf-native
     tree-sitter  # CLI needed by nvim-treesitter to build parsers
     nodejs  # nvim-treesitter parser build toolchain
+
     (pkgs.writeShellScriptBin "laptop-screen-watchdog" ''
       # Robust laptop-screen watchdog: polls every 1s. If eDP-1 is disabled
       # while NO external monitor is connected, force it back on. Also
