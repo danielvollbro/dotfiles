@@ -6,7 +6,7 @@
     ../../roles/hyprland/default.nix
     ../../roles/dell-xps-13/default.nix
     ../../roles/development/default.nix
-    ../../roles/hermes-agent-access/default.nix
+    ../../roles/hermes-agent-ssh-access/default.nix
     ./hardware-configuration.nix
   ];
 
