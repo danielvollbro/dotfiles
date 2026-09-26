@@ -2,9 +2,10 @@
 
 {
   imports = [
-    ./hardware-configuration.nix
+    ../base.nix
     ../../roles/hermes-agent-ssh-access/default.nix
     ../../roles/private-ssh-access/default.nix
+    ./hardware-configuration.nix
   ];
 
   networking.hostName = "gaming-pc";
