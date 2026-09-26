@@ -94,25 +94,8 @@
     '')
   ];
 
-  xdg.configFile."hypr/hyprland.conf".source = ./hypr/hyprland.conf;
-  xdg.configFile."mako/config".source = ./mako/config;
-  xdg.configFile."kanshi/config".source = ./kanshi/config;
-  xdg.configFile."rofi/config.rasi".source = ./rofi/config.rasi;
-  xdg.configFile."rofi/rofi.warm.rasi".source = ./rofi/rofi.warm.rasi;
-  xdg.configFile."hypr/hyprlock.conf".source = ./hypr/hyprlock.conf;
-  xdg.configFile."hypr/hypridle.conf".source = ./hypr/hypridle.conf;
 
   # Wallpaper (used by swww + hyprlock)
   xdg.configFile."wallpapers/japan-night.jpg".source = ./wallpapers/japan-night.jpg;
 
-  xdg.configFile."waybar/config".source = ./waybar/config;
-  xdg.configFile."waybar/style.css".source = ./waybar/style.css;
-  xdg.configFile."waybar/sysinfo.sh" = {
-    source = ./waybar/sysinfo.sh;
-    executable = true;
-  };
-  xdg.configFile."waybar/idle_state.sh" = {
-    source = ./waybar/idle_state.sh;
-    executable = true;
-  };
 }
