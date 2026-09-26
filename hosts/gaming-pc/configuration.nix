@@ -8,7 +8,7 @@
   # Enable networking
   networking.networkmanager.enable = true;
 
-  # Only allow SSH from the Hermes agent's source IP on6the 50-network
+  # Only allow SSH from the Hermes agent's source IP on the 50-network
   networking.firewall.extraCommands = ''
     iptables -A nixos-fw -p tcp --dport 22 -s 10.0.50.20 -j ACCEPT
     iptables -A nixos-fw -p tcp --dport 22 -s 10.0.10.16 -j ACCEPT
