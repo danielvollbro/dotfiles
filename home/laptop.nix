@@ -1,9 +1,9 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
-  home.username = "daniel";
-  home.homeDirectory = "/home/daniel";
-  home.stateVersion = "26.05";
+  imports = [
+    ./base.nix
+  ];
 
   home.packages = with pkgs; [
     ripgrep
@@ -14,6 +14,17 @@
     hyprlock
     hypridle
     papirus-icon-theme
+
+    # AI
+    claude-code
+
+    # Software
+    moonlight-qt
+    discord
+
+    # Development
+    go
+    gopls
 
     # Language servers / dev tools
     gotools
@@ -38,6 +49,7 @@
     gcc  # builds telescope-fzf-native
     tree-sitter  # CLI needed by nvim-treesitter to build parsers
     nodejs  # nvim-treesitter parser build toolchain
+
     (pkgs.writeShellScriptBin "laptop-screen-watchdog" ''
       # Robust laptop-screen watchdog: polls every 1s. If eDP-1 is disabled
       # while NO external monitor is connected, force it back on. Also
@@ -82,37 +94,25 @@
     '')
   ];
 
-  programs.home-manager.enable = true;
-
-  # Symlink the dotfiles in this repo into place instead of managing them by hand
-  xdg.configFile."hypr/hyprland.conf".source = ../home/hypr/hyprland.conf;
-  xdg.configFile."waybar/config".source = ../home/waybar/config;
-  xdg.configFile."waybar/style.css".source = ../home/waybar/style.css;
-  xdg.configFile."mako/config".source = ../home/mako/config;
-  xdg.configFile."kanshi/config".source = ../home/kanshi/config;
-  xdg.configFile."rofi/config.rasi".source = ../home/rofi/config.rasi;
-  xdg.configFile."rofi/rofi.warm.rasi".source = ../home/rofi/rofi.warm.rasi;
-  xdg.configFile."hypr/hyprlock.conf".source = ../home/hypr/hyprlock.conf;
-  xdg.configFile."hypr/hypridle.conf".source = ../home/hypr/hypridle.conf;
-  xdg.configFile."nvim/init.lua".source = ../home/nvim/init.lua;
-  xdg.configFile."nvim/after/plugins/telescope.lua".source = ../home/nvim/after/plugins/telescope.lua;
-  xdg.configFile."nvim/lua/plugins/telescope.lua".source = ../home/nvim/lua/plugins/telescope.lua;
-  xdg.configFile."nvim/lua/plugins/lsp.lua".source = ../home/nvim/lua/plugins/lsp.lua;
-  xdg.configFile."nvim/after/ftplugin/go.lua".source = ../home/nvim/after/ftplugin/go.lua;
-  xdg.configFile."nvim/lua/plugins/ui.lua".source = ../home/nvim/lua/plugins/ui.lua;
-  xdg.configFile."nvim/lua/plugins/treesitter-conform.lua".source = ../home/nvim/lua/plugins/treesitter-conform.lua;
-  xdg.configFile."nvim/lua/config/sets.lua".source = ../home/nvim/lua/config/sets.lua;
-  xdg.configFile."nvim/lua/config/remaps.lua".source = ../home/nvim/lua/config/remaps.lua;
-  xdg.configFile."nvim/lua/config/lazy.lua".source = ../home/nvim/lua/config/lazy.lua;
+  xdg.configFile."hypr/hyprland.conf".source = ./hypr/hyprland.conf;
+  xdg.configFile."mako/config".source = ./mako/config;
+  xdg.configFile."kanshi/config".source = ./kanshi/config;
+  xdg.configFile."rofi/config.rasi".source = ./rofi/config.rasi;
+  xdg.configFile."rofi/rofi.warm.rasi".source = ./rofi/rofi.warm.rasi;
+  xdg.configFile."hypr/hyprlock.conf".source = ./hypr/hyprlock.conf;
+  xdg.configFile."hypr/hypridle.conf".source = ./hypr/hypridle.conf;
 
   # Wallpaper (used by swww + hyprlock)
-  xdg.configFile."wallpapers/japan-night.jpg".source = ../home/wallpapers/japan-night.jpg;
+  xdg.configFile."wallpapers/japan-night.jpg".source = ./wallpapers/japan-night.jpg;
+
+  xdg.configFile."waybar/config".source = ./waybar/config;
+  xdg.configFile."waybar/style.css".source = ./waybar/style.css;
   xdg.configFile."waybar/sysinfo.sh" = {
-    source = ../home/waybar/sysinfo.sh;
+    source = ./waybar/sysinfo.sh;
     executable = true;
   };
   xdg.configFile."waybar/idle_state.sh" = {
-    source = ../home/waybar/idle_state.sh;
+    source = ./waybar/idle_state.sh;
     executable = true;
   };
 }

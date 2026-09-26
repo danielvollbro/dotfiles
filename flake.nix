@@ -23,7 +23,19 @@
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users.daniel = import ./home/home.nix;
+          home-manager.users.daniel = import ./home/laptop.nix;
+        }
+      ];
+    };
+    nixosConfigurations.gaming-pc = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./hosts/gaming-pc/configuration.nix
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users.daniel = import ./home/gaming-pc.nix;
         }
       ];
     };
