@@ -30,7 +30,6 @@
     nixosConfigurations.gaming-pc = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
-        nixos-hardware.nixosModules.dell-xps-13-9370
         ./hosts/gaming-pc/configuration.nix
         home-manager.nixosModules.home-manager
         {
