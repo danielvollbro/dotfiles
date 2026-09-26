@@ -3,10 +3,10 @@
 {
   imports = [
     ../base.nix
-    ../modules/hyprland.nix
-    ../modules/dell-xps-13.nix
-    ../modules/development.nix
-    ../modules/hermes-agent-access.nix
+    ../../roles/hyprland/config.nix
+    ../../roles/dell-xps-13/config.nix
+    ../../roles/development/config.nix
+    ../../roles/hermes-agent-access/config.nix
     ./hardware-configuration.nix
   ];
 

@@ -1,6 +1,10 @@
 { pkgs, ... }:
 
 {
+  imports = [
+    ../../modules/rofi/setup.nix
+  ];
+
   environment.systemPackages = with pkgs; [
     kitty
     waybar
@@ -33,4 +37,9 @@
 
   programs.hyprland.enable = true;
 
+  home-manager.users.daniel = { ... }: {
+    xdg.configFile."hypr/hyprland.conf".source = ./dotfiles/hyprland.conf;
+    xdg.configFile."hypr/hyprlock.conf".source = ./dotfiles/hyprlock.conf;
+    xdg.configFile."hypr/hypridle.conf".source = ./dotfiles/hypridle.conf;
+  };
 }
