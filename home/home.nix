@@ -15,6 +15,21 @@
     hypridle
     papirus-icon-theme
 
+    # AI
+    claude-code
+
+    # Software
+    neovim
+    firefox-bin
+    moonlight-qt
+    discord
+    bitwarden-desktop
+
+    # Development
+    git
+    go
+    gopls
+
     # Language servers / dev tools
     gotools
     docker-language-server
