@@ -17,7 +17,8 @@
 
       # Language servers / dev tools
       gotools
-      docker-language-server
+      dockerfile-language-server-nodejs
+      docker-compose-language-service
       terraform-ls
       bash-language-server
       intelephense
