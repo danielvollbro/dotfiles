@@ -1,7 +1,5 @@
-{ pkgs, ... }:
+{ ... }:
 
 {
-  imports = [
-    ./base.nix
-  ];
+  # TBA...
 }

@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ../base.nix
+    ../../roles/base/default.nix
     ../../roles/hermes-agent-ssh-access/default.nix
     ../../roles/private-ssh-access/default.nix
     ./hardware-configuration.nix

@@ -1,9 +1,15 @@
-{ pkgs, ... }:
+{ ... }:
 
 {
   imports = [
-    ../modules/git/default.nix
+    ../../modules/git/default.nix
+    ../../modules/nvim/default.nix
   ];
+
+  # Shell Aliases
+  environment.shellAliases = {
+    vim = "nvim";
+  };
 
   # Use the systemd-boot EFI boot loader.
   boot.loader = {
@@ -63,7 +69,6 @@
     isNormalUser = true;
     description = "Daniel Vollbro";
     extraGroups = [ "wheel" "input" "video" ];
-    packages = with pkgs; [];
   };
 
   # SSH access
@@ -81,4 +86,16 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
+  home-manager.users.daniel = { pkgs, ... }: {
+    home.username = "daniel";
+    home.homeDirectory = "/home/daniel";
+    home.stateVersion = "26.05";
+
+    home.packages = with pkgs; [
+      firefox-bin
+      bitwarden-desktop
+    ];
+
+    programs.home-manager.enable = true;
+  };
 }
