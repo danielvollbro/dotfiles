@@ -2,17 +2,13 @@
 
 {
   imports = [
-    ../base.nix
+    ../../roles/base/default.nix
     ../../roles/hyprland/default.nix
     ../../roles/dell-xps-13/default.nix
     ../../roles/development/default.nix
     ../../roles/hermes-agent-ssh-access/default.nix
     ./hardware-configuration.nix
   ];
-
-  environment.shellAliases = {
-    vim = "nvim";
-  };
 
   networking.wireless = {
     secretsFile = "/etc/nixos-secrets/wireless.env";
