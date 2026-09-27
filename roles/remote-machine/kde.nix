@@ -13,8 +13,7 @@
     KWIN_DRM_NO_DIRECT_SCANOUT = "1";
   };
 
-  environment.etc."xdg/powerdevilrc".text = ''
-    [Battery][General]
+  home-manager.users.daniel.xdg.configFile."powerdevilrc".text = ''
     [AC][DPMSControl]
     idleTime=0
     [AC][DimDisplay]
