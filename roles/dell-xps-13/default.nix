@@ -1,6 +1,10 @@
 { pkgs, ... }:
 
 {
+  imports = [
+    ../../modules/laptop-screen-watchdog/default.nix
+  ];
+
   hardware.enableRedistributableFirmware = true;
   hardware.bluetooth = {
     enable = true;
