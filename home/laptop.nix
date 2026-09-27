@@ -22,5 +22,4 @@
 
   # Wallpaper (used by swww + hyprlock)
   xdg.configFile."wallpapers/japan-night.jpg".source = ./wallpapers/japan-night.jpg;
-
 }
