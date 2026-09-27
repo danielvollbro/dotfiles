@@ -18,6 +18,8 @@
     idleTime=0
     [AC][DimDisplay]
     dimWhenIdle=false
+    [AC][SuspendSession]
+    idleTime=3600
   '';
 
   services.logind.settings.Login.IdleAction = "ignore";
