@@ -12,4 +12,14 @@
   environment.sessionVariables = {
     KWIN_DRM_NO_DIRECT_SCANOUT = "1";
   };
+
+  environment.etc."xdg/powerdevilrc".text = ''
+    [Battery][General]
+    [AC][DPMSControl]
+    idleTime=0
+    [AC][DimDisplay]
+    dimWhenIdle=false
+  '';
+
+  services.logind.settings.Login.IdleAction = "ignore";
 }
