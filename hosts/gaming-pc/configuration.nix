@@ -3,6 +3,7 @@
 {
   imports = [
     ../../roles/base/default.nix
+    ../../roles/gaming/default.nix
     ../../roles/hermes-agent-ssh-access/default.nix
     ../../roles/private-ssh-access/default.nix
     ../../roles/remote-machine/kde.nix
