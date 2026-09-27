@@ -6,6 +6,7 @@
     ../../modules/krfb/default.nix
     ../../modules/sunshine/default.nix
     ../../modules/hardware/gpu/rtx3070/default.nix
+    ../../modules/wol/default.nix
   ];
 
   environment.sessionVariables = {
