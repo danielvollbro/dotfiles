@@ -14,18 +14,40 @@
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/4db15385-6e66-483e-bcab-015835c96b9b";
-      fsType = "ext4";
+    { device = "/dev/mapper/cryptroot";
+      fsType = "btrfs";
+      options = [ "subvol=root" ];
     };
 
+  boot.initrd.luks.devices."cryptroot".device = "/dev/disk/by-uuid/8c7cead3-f6b7-4a83-957c-2813bf174d5d";
+
+  # Unlock the LUKS swap container in initrd so /dev/mapper/cryptswap
+  # exists when swapDevices is activated (was missing -> swap never came up).
+  boot.initrd.luks.devices."cryptswap" = {
+    device = "/dev/disk/by-partlabel/disk-main-luksSwap";
+    allowDiscards = true;
+  };
+
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/5AF7-0C73";
+    { device = "/dev/disk/by-uuid/B70D-FB96";
       fsType = "vfat";
       options = [ "fmask=0077" "dmask=0077" ];
     };
 
+  fileSystems."/home" =
+    { device = "/dev/mapper/cryptroot";
+      fsType = "btrfs";
+      options = [ "subvol=home" ];
+    };
+
+  fileSystems."/nix" =
+    { device = "/dev/mapper/cryptroot";
+      fsType = "btrfs";
+      options = [ "subvol=nix" ];
+    };
+
   swapDevices =
-    [ { device = "/dev/disk/by-uuid/89ad3e99-0a89-483e-9d43-03327ad98fe6"; }
+    [ { device = "/dev/mapper/cryptswap"; }
     ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
