@@ -1,4 +1,4 @@
-{ ... }:
+{ username, ... }:
 
 {
   imports = [
@@ -65,9 +65,8 @@
   console.keyMap = "sv-latin1";
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users."daniel" = {
+  users.users.${username} = {
     isNormalUser = true;
-    description = "Daniel Vollbro";
     extraGroups = [ "wheel" "input" "video" ];
   };
 
@@ -86,9 +85,9 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  home-manager.users.daniel = { pkgs, ... }: {
-    home.username = "daniel";
-    home.homeDirectory = "/home/daniel";
+  home-manager.users.${username} = { pkgs, ... }: {
+    home.username = "${username}";
+    home.homeDirectory = "/home/${username}";
     home.stateVersion = "26.05";
 
     home.packages = with pkgs; [

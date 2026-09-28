@@ -1,11 +1,11 @@
-{ inputs, ... }:
+{ inputs, username, ... }:
 
 {
   imports = [ inputs.moonshine.nixosModules.default ];
 
   services.moonshine = {
     enable = true;
-    user = "daniel";
+    user = "${username}";
     uid = 1000;
     openFirewall = true;
 

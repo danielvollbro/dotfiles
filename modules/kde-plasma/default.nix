@@ -1,4 +1,4 @@
-{ ... }:
+{ username, ... }:
 
 {
   services ={ 
@@ -6,7 +6,7 @@
     displayManager = {
       autoLogin = {
         enable = true;
-        user = "daniel";
+        user = "${username}";
       };
       sddm = {
         enable = true;

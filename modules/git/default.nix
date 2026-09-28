@@ -1,7 +1,7 @@
-{ ... }:
+{ username, ... }:
 
 {
-  home-manager.users.daniel = { pkgs, ... }: {
+  home-manager.users.${username} = { pkgs, ... }: {
     home.packages = with pkgs; [
       git
     ];

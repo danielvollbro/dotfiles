@@ -14,10 +14,13 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-hardware, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, nixos-hardware, ... }@inputs:
+  let
+    username = "daniel";
+  in {
     nixosConfigurations.laptop = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      specialArgs = { inherit inputs; };
+      specialArgs = { inherit inputs; inherit username; };
       modules = [
         nixos-hardware.nixosModules.dell-xps-13-9370
         ./hosts/laptop/configuration.nix
@@ -25,20 +28,20 @@
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users.daniel = import ./home/laptop.nix;
+          home-manager.users.${username} = import ./home/laptop.nix;
         }
       ];
     };
     nixosConfigurations.gaming-pc = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      specialArgs = { inherit inputs; };
+      specialArgs = { inherit inputs; inherit username; };
       modules = [
         ./hosts/gaming-pc/configuration.nix
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users.daniel = import ./home/gaming-pc.nix;
+          home-manager.users.${username} = import ./home/gaming-pc.nix;
         }
       ];
     };

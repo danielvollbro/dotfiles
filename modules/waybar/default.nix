@@ -1,9 +1,9 @@
-{ pkgs, ... }:
+{ pkgs, username, ... }:
 
 {
   environment.systemPackages = with pkgs; [ waybar ];
 
-  home-manager.users.daniel = { ... }: {
+  home-manager.users.${username} = { ... }: {
     xdg.configFile."waybar/config".source = ./dotfiles/config;
     xdg.configFile."waybar/style.css".source = ./dotfiles/style.css;
     xdg.configFile."waybar/sysinfo.sh" = {

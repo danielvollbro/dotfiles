@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, username, ... }:
 
 {
   imports = [
@@ -9,7 +9,7 @@
     docker
   ];
 
-  home-manager.users.daniel = { pkgs, ... }: {
+  home-manager.users.${username} = { pkgs, ... }: {
     home.packages = with pkgs; [
       # Development
       go
