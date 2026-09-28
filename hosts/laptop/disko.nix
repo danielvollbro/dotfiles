@@ -39,7 +39,7 @@
             luksRoot = {
               priority = 3;
               name = "luksRoot";
-              size = "100%FREE";
+              size = "100%";
               content = {
                 type = "luks";
                 name = "cryptroot";
