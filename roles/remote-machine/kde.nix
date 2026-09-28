@@ -1,4 +1,4 @@
-{ ... }:
+{ username, ... }:
 
 {
   imports = [
@@ -13,7 +13,7 @@
     KWIN_DRM_NO_DIRECT_SCANOUT = "1";
   };
 
-  home-manager.users.daniel.xdg.configFile."powerdevilrc".text = ''
+  home-manager.users.${username}.xdg.configFile."powerdevilrc".text = ''
     [AC][DPMSControl]
     idleTime=0
     [AC][DimDisplay]

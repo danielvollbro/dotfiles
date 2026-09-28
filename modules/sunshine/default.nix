@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, username, ... }:
 
 {
   services.sunshine = {
@@ -11,11 +11,11 @@
 
   hardware.uinput.enable = true;
 
-  users.users."daniel" = {
+  users.users.${username} = {
     extraGroups = [ "uinput" ];
   };
 
-  home-manager.users.daniel = { ... }: {
+  home-manager.users.${username} = { ... }: {
     xdg.configFile."sunshine/apps.json".source = ./dotfiles/apps.json;
     xdg.configFile."sunshine/sunshine.conf".source = ./dotfiles/sunshine.conf;
   };

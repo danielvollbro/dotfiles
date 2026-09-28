@@ -1,7 +1,7 @@
-{  ... }:
+{ username, ... }:
 
 {
-  users.users."daniel".openssh.authorizedKeys.keys = [
+  users.users.${username}.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJjzcieQ64SuEq6swAfKlt540QKNJs6wNIcmOEEs0Uya daniel@nixos"
   ];
 

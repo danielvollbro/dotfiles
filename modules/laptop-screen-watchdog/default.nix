@@ -1,7 +1,7 @@
-{ pkgs, ... }:
+{ pkgs, username, ... }:
 
 {
-  home-manager.users.daniel = { ... }: {
+  home-manager.users.${username} = { ... }: {
     home.packages = with pkgs; [
       (pkgs.writeShellScriptBin "laptop-screen-watchdog" ''
         # Robust laptop-screen watchdog: polls every 1s. If eDP-1 is disabled

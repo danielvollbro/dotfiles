@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, username, ... }:
 
 {
   environment.systemPackages = with pkgs; [
@@ -31,7 +31,7 @@
 
   programs.hyprland.enable = true;
 
-  home-manager.users.daniel = { ... }: {
+  home-manager.users.${username} = { ... }: {
     xdg.configFile."hypr/hyprland.conf".source = ./dotfiles/hyprland.conf;
     xdg.configFile."hypr/hyprlock.conf".source = ./dotfiles/hyprlock.conf;
     xdg.configFile."hypr/hypridle.conf".source = ./dotfiles/hypridle.conf;
