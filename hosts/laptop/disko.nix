@@ -20,8 +20,24 @@
               };
             };
 
-            luksRoot = {
+            luksSwap = {
               priority = 2;
+              name = "luksSwap";
+              size = "17G";
+              content = {
+                type = "luks";
+                name = "cryptswap";
+                settings.allowDiscards = true;
+                content = {
+                  type = "swap";
+                  discardPolicy = "both";
+                  resumeDevice = true;
+                };
+              };
+            };
+
+            luksRoot = {
+              priority = 3;
               name = "luksRoot";
               size = "100%FREE";
               content = {
@@ -45,22 +61,6 @@
                       mountOptions = [ "compress=zstd" "noatime" ];
                     };
                   };
-                };
-              };
-            };
-
-            luksSwap = {
-              priority = 3;
-              name = "luksSwap";
-              size = "17G";
-              content = {
-                type = "luks";
-                name = "cryptswap";
-                settings.allowDiscards = true;
-                content = {
-                  type = "swap";
-                  discardPolicy = "both";
-                  resumeDevice = true;
                 };
               };
             };
