@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, config, ... }:
 
 {
   imports = [
@@ -10,9 +10,24 @@
     ./hardware-configuration.nix
   ];
 
+  environment.systemPackages = with pkgs; [ sops ];
+
+  # Sops
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+    validateSopsFiles = true;
+
+    age.keyFile = "/mnt/master-age.key";
+
+    secrets.WIFI_PASSWORD_KEY = {
+      owner = "wpa_supplicant";
+    };
+  };
+
   networking.wireless = {
-    secretsFile = "/etc/nixos-secrets/wireless.env";
-    networks."Wollbro_Main".pskRaw = "ext:wifi_psk";
+    enable = true;
+    secretsFile = config.sops.secrets.WIFI_PASSWORD_KEY.path;
+    networks."Wollbro_Main".pskRaw = "ext:WIFI_PASSWORD_KEY";
   };
 
   networking.hostName = "daniel-laptop"; # Define your hostname.
