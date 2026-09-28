@@ -12,9 +12,20 @@
       url = "github:NixOS/nixos-hardware";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-hardware, ... }@inputs:
+  outputs = {
+    self,
+    nixpkgs,
+    home-manager,
+    nixos-hardware,
+    sops-nix,
+    ...
+  }@inputs:
   let
     username = "daniel";
   in {
@@ -30,6 +41,7 @@
           home-manager.useUserPackages = true;
           home-manager.users.${username} = import ./home/laptop.nix;
         }
+        sops-nix.nixosModules.sops
       ];
     };
     nixosConfigurations.gaming-pc = nixpkgs.lib.nixosSystem {
@@ -43,6 +55,7 @@
           home-manager.useUserPackages = true;
           home-manager.users.${username} = import ./home/gaming-pc.nix;
         }
+        sops-nix.nixosModules.sops
       ];
     };
   };
