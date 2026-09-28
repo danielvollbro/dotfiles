@@ -22,11 +22,18 @@
     secrets.WIFI_PASSWORD_KEY = {
       owner = "wpa_supplicant";
     };
+
+    templates."wireless.env" = {
+      content = ''
+        WIFI_PASSWORD_KEY=${config.sops.placeholder.WIFI_PASSWORD_KEY}
+      '';
+      owner = "wpa_supplicant";
+    };
   };
 
   networking.wireless = {
     enable = true;
-    secretsFile = config.sops.secrets.WIFI_PASSWORD_KEY.path;
+    secretsFile = config.sops.templates."wireless.env".path;
     networks."Wollbro_Main".pskRaw = "ext:WIFI_PASSWORD_KEY";
   };
 
