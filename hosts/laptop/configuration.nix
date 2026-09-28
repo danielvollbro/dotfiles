@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ pkgs, config, username, ... }:
 
 {
   imports = [
@@ -17,17 +17,36 @@
     defaultSopsFile = ./secrets.yaml;
     validateSopsFiles = true;
 
-    age.keyFile = "/mnt/master-age.key";
+    age.sshKeyPaths = [
+      "/etc/ssh/ssh_host_ed25519_key"
+      "/home/${username}/.ssh/id_ed25519"
+    ];
 
-    secrets.WIFI_PASSWORD_KEY = {
-      owner = "wpa_supplicant";
+    secrets = {
+      WIFI_PASSWORD_KEY = {
+        owner = "wpa_supplicant";
+      };
+      SSH_HOST_ED25519_KEY = {
+        path = "/etc/ssh/ssh_host_ed25519_key";
+        owner = "root";
+        group = "root";
+        mode = "0600";
+      };
+      SSH_HOST_ED25519_PUB_KEY = {
+        path = "/etc/ssh/ssh_host_ed25519_key.pub";
+        owner = "root";
+        group = "root";
+        mode = "0644";
+      };
     };
 
-    templates."wireless.env" = {
-      content = ''
-        WIFI_PASSWORD_KEY=${config.sops.placeholder.WIFI_PASSWORD_KEY}
-      '';
-      owner = "wpa_supplicant";
+    templates = {
+      "wireless.env" = {
+        content = ''
+          WIFI_PASSWORD_KEY=${config.sops.placeholder.WIFI_PASSWORD_KEY}
+        '';
+        owner = "wpa_supplicant";
+      };
     };
   };
 
