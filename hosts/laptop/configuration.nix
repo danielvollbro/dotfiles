@@ -10,7 +10,9 @@
     ./hardware-configuration.nix
   ];
 
-  environment.systemPackages = with pkgs; [ sops ];
+  home-manager.users.${username} = { ... }: {
+    home.packages = with pkgs; [ sops ];
+  };
 
   # Sops
   sops = {
