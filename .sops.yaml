@@ -1,0 +1,12 @@
+.keys:
+  - &master_age_key age1epjncvrwa8mtz6k28jhmc02h3qemmrp48xc76syjhltvkna23yfsdz9vzd
+  - &laptop_ssh_host_key age1fs7t2zdfk5huz5lrdsuxnjs3rz2extd3pmx88hr4l3fxk35kmy2q72gdnf
+  - &laptop_ssh_user_key age15feqme4a99gp4rdd7jy02utpvt0dhdr5r2tmc28k0j4gmwj9hpnqwp0xvg
+
+creation_rules:
+  - path_regex: hosts/.*/secrets.yaml$
+    key_groups:
+      - age:
+          - *master_age_key
+          - *laptop_ssh_host_key
+          - *laptop_ssh_user_key
