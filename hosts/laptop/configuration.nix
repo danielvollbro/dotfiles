@@ -40,6 +40,18 @@
         group = "root";
         mode = "0644";
       };
+      SSH_USER_ED25519_KEY = {
+        path = "/home/${username}/.ssh/id_ed25519";
+        owner = "${username}";
+        group = "users";
+        mode = "0600";
+      };
+      SSH_USER_ED25519_PUB_KEY = {
+        path = "/home/${username}/.ssh/id_ed25519.pub";
+        owner = "${username}";
+        group = "users";
+        mode = "0644";
+      };
     };
 
     templates = {
