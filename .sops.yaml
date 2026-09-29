@@ -2,11 +2,17 @@
   - &master_age_key age1epjncvrwa8mtz6k28jhmc02h3qemmrp48xc76syjhltvkna23yfsdz9vzd
   - &laptop_ssh_host_key age1fs7t2zdfk5huz5lrdsuxnjs3rz2extd3pmx88hr4l3fxk35kmy2q72gdnf
   - &laptop_ssh_user_key age15feqme4a99gp4rdd7jy02utpvt0dhdr5r2tmc28k0j4gmwj9hpnqwp0xvg
+  - &gaming_pc_ssh_host_key age164ygv05pcqp0x8vmjggvkafpht68zy6wsk897j368smelql7nutq0pdkcw
 
 creation_rules:
-  - path_regex: hosts/.*/secrets.yaml$
+  - path_regex: hosts/laptop/secrets.yaml$
     key_groups:
       - age:
           - *master_age_key
           - *laptop_ssh_host_key
           - *laptop_ssh_user_key
+  - path_regex: hosts/gaming-pc/secrets.yaml$
+    key_groups:
+      - age:
+          - *master_age_key
+          - *gaming_pc_ssh_host_key
