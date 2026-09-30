@@ -1,7 +1,6 @@
 { ... }:
 
 {
-  # Enable WOL (Wake On Lan)
   networking = {
     interfaces = {
       enp5s0 = {

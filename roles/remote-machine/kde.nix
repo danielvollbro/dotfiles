@@ -2,10 +2,10 @@
 
 {
   imports = [
-    ../../modules/kde-plasma/default.nix
-    ../../modules/krfb/default.nix
-    ../../modules/sunshine/default.nix
-    ../../modules/wol/default.nix
+    ../../modules/applications/kde-plasma/default.nix
+    ../../modules/applications/krfb/default.nix
+    ../../modules/applications/sunshine/default.nix
+    ../../roles/enable/wol/default.nix
   ];
 
   environment.sessionVariables = {
