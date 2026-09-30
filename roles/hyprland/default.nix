@@ -1,11 +1,11 @@
-{ pkgs, ... }:
+{ ... }:
 
 {
   imports = [
-    ../../modules/hyprland/default.nix
-    ../../modules/rofi/default.nix
-    ../../modules/mako/default.nix
-    ../../modules/kanshi/default.nix
-    ../../modules/waybar/default.nix
+    ../../modules/applications/hyprland/default.nix
+    ../../modules/applications/rofi/default.nix
+    ../../modules/applications/mako/default.nix
+    ../../modules/applications/kanshi/default.nix
+    ../../modules/applications/waybar/default.nix
   ];
 }
