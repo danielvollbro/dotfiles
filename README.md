@@ -57,7 +57,7 @@ sudo nix --experimental-features "nix-command flakes" run github:danielvollbro/d
 
 The script (`installer/bootstrap.sh`) asks for a `destroy` confirmation before wiping the disk, then:
 
-1. clones this repo to `/root/dotfiles` (reuses an existing checkout if present; override with `DOTFILES_DIR`),
+1. clones this repo to `/root/dotfiles` (reuses an existing checkout if present, hard-resetting it to `origin`'s default branch first; override the path with `DOTFILES_DIR`),
 2. wipes, partitions and mounts the target disk via the host's `disko.nix`,
 3. **laptop only:** fetches the master age key from Vaultwarden — `bw login` interactively prompts for your Vaultwarden email, master password and 2FA code (nothing scripted around the prompts), then reads the key from the secure note `master-age-key` (override with `BW_ITEM_NAME`; point `BW_KEY_FILE` at a local file to skip Vaultwarden entirely) and logs out. Places it at `/mnt/var/lib/sops/age/master.key` with `0600`.
 4. runs `nixos-install --flake .#<host>`.
@@ -69,7 +69,7 @@ Then `systemctl reboot`. Hosts using `sshKeyPaths` (gaming-pc) don't need a mast
 
 1. Boot the NixOS installer (Ventoy USB), mount your target at `/mnt` as usual, and clone the repo.
 2. Provide the decryption identity for the installed system:
-   - **Laptop (master key):** place the master age key where the config expects it, and keep the copy on the USB:
+   - **Laptop (master key):** place the master age key where the config expects it (retrieve it from Vaultwarden — secure note `master-age-key` — or wherever else you keep a copy):
      ```bash
      sudo mkdir -p /mnt/var/lib/sops/age
      sudo cp /path/to/master-age.key /mnt/var/lib/sops/age/master.key
