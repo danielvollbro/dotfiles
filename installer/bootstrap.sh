@@ -7,7 +7,7 @@
 # The script:
 #   1. clones this repo (or reuses an existing checkout)
 #   2. wipes and partitions the target disk with disko
-#   3. places the master age key (for hosts that decrypt with age.keyFile)
+#   3. fetches the master age key from Vaultwarden (laptop only)
 #   4. runs nixos-install with the host's flake configuration
 #
 # WARNING: step 2 DESTROYS everything on the target disk. You will be asked
@@ -18,8 +18,10 @@ set -euo pipefail
 HOST="${1:-}"
 REPO_URL="https://github.com/danielvollbro/dotfiles.git"
 CHECKOUT="${DOTFILES_DIR:-/root/dotfiles}"
-KEY_NAME="master.key"
-KEY_DST="/mnt/var/lib/sops/age/${KEY_NAME}"
+KEY_DST="/mnt/var/lib/sops/age/master.key"
+# Vaultwarden secure note holding the master age key in its notes field.
+BW_ITEM_NAME="${BW_ITEM_NAME:-master-age-key}"
+BW_URL="${BW_URL:-https://vaultwarden.home.vollbro.se}"
 
 die() { echo "ERROR: $*" >&2; exit 1; }
 info() { echo "==> $*"; }
@@ -64,48 +66,43 @@ info "running disko (partition + format + mount)"
 nix --experimental-features "nix-command flakes" run \
   github:nix-community/disko/latest -- --mode destroy,format,mount "$DISKO_FILE"
 
-# --- 3. master age key -------------------------------------------------------
+# --- 3. master age key (from Vaultwarden) -----------------------------------
 if [ "$NEEDS_MASTER_KEY" -eq 1 ]; then
-  find_master_key() {
-    # 1) already mounted somewhere obvious?
-    for p in "$CHECKOUT/master-age.key" /mnt/master-age.key /run/media/*/master-age.key; do
-      [ -f "$p" ] && { echo "$p"; return; }
-    done
-    # 2) try to unmount the Ventoy data partition and mount it read-only
-    local dev
-    dev="$(lsblk -rno NAME,TRAN | awk '$2=="usb"{print "/dev/"$1; exit}')"
-    if [ -n "${dev:-}" ]; then
-      local part
-      part="$(lsblk -rno NAME,TYPE "${dev}" | awk '$2=="part"{print "/dev/"$1; exit}')"
-      if [ -n "${part:-}" ]; then
-        umount -R /run/miso/bootmnt 2>/dev/null || true
-        umount "${part}" 2>/dev/null || true
-        mkdir -p /tmp/usbkey
-        if mount -o ro "${part}" /tmp/usbkey 2>/dev/null; then
-          for p in /tmp/usbkey/master-age.key /tmp/usbkey/master.key; do
-            [ -f "$p" ] && { echo "$p"; return; }
-          done
-        fi
-      fi
-    fi
-    echo ""
-  }
-
   if [ -f "$KEY_DST" ]; then
     info "master key already in place at $KEY_DST"
   else
-    KEY_SRC="$(find_master_key)"
-    if [ -z "$KEY_SRC" ]; then
-      read -r -p "Path to master-age.key on this machine: " KEY_SRC
-      [ -f "$KEY_SRC" ] || die "no file at $KEY_SRC"
+    # Manual fallback: point BW_KEY_FILE at a local copy of the key.
+    KEY_SRC=""
+    if [ -n "${BW_KEY_FILE:-}" ] && [ -f "$BW_KEY_FILE" ]; then
+      KEY_SRC="$BW_KEY_FILE"
+      info "using key from BW_KEY_FILE=$BW_KEY_FILE"
+    else
+      command -v bw >/dev/null || die "bitwarden CLI not found in PATH"
+      command -v jq >/dev/null || die "jq not found in PATH"
+      info "fetching master age key from Vaultwarden ($BW_URL)"
+      read -rsp "Vaultwarden master password: " BW_PW
+      echo
+
+      bw config server "$BW_URL" >/dev/null
+      # --passwordenv keeps the password out of argv/process listing;
+      # the session key only exists in this shell, notes decrypt locally.
+      BW_SESSION="$(BW_PASSWORD="$BW_PW" bw unlock --passwordenv BW_PASSWORD --raw)" \
+        || { unset BW_PW; die "bw unlock failed (wrong password or unreachable Vaultwarden?)"; }
+      unset BW_PW
+
+      bw get notes "$BW_ITEM_NAME" --session "$BW_SESSION" > "$KEY_SRC" \
+        || { unset BW_SESSION; rm -f "$KEY_SRC"; die "could not read notes of item '$BW_ITEM_NAME'"; }
+      unset BW_SESSION
+      chmod 600 "$KEY_SRC"
+      [ -s "$KEY_SRC" ] || { rm -f "$KEY_SRC"; die "item '$BW_ITEM_NAME' has an empty notes field"; }
     fi
+
     info "placing master key at $KEY_DST"
     mkdir -p "$(dirname "$KEY_DST")"
     cp "$KEY_SRC" "$KEY_DST"
     chmod 700 "$(dirname "$KEY_DST")"
     chmod 600 "$KEY_DST"
-    # best effort: undo temporary mounts
-    umount /tmp/usbkey 2>/dev/null || true
+    case "$KEY_SRC" in /tmp/*) rm -f "$KEY_SRC";; esac
   fi
 fi
 
