@@ -46,18 +46,6 @@
       WIFI_PASSWORD_KEY = {
         owner = "wpa_supplicant";
       };
-      SSH_HOST_ED25519_KEY = {
-        path = "/etc/ssh/ssh_host_ed25519_key";
-        owner = "root";
-        group = "root";
-        mode = "0600";
-      };
-      SSH_HOST_ED25519_PUB_KEY = {
-        path = "/etc/ssh/ssh_host_ed25519_key.pub";
-        owner = "root";
-        group = "root";
-        mode = "0644";
-      };
       SSH_USER_ED25519_KEY = {
         path = "/home/${username}/.ssh/id_ed25519";
         owner = "${username}";
