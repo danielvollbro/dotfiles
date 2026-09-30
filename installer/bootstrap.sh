@@ -15,6 +15,13 @@
 
 set -euo pipefail
 
+# Enable flakes/nix-command for every nix invocation in this script,
+# including ones that don't take --experimental-features directly (like
+# nixos-install). The installer ISO's default nix.conf does NOT have these
+# enabled, and nixos-install is a separate process that doesn't inherit
+# flags passed to the outer `nix run` that launched this script.
+export NIX_CONFIG="experimental-features = nix-command flakes"
+
 HOST="${1:-}"
 REPO_URL="https://github.com/danielvollbro/dotfiles.git"
 CHECKOUT="${DOTFILES_DIR:-/root/dotfiles}"
@@ -63,6 +70,7 @@ read -r -p "Type 'destroy' to continue: " ANSWER
 [ "$ANSWER" = "destroy" ] || die "aborted"
 
 info "running disko (partition + format + mount)"
+[ -f "$DISKO_FILE" ] || die "disko config not found: $DISKO_FILE (does not exist in this repo yet)"
 nix --experimental-features "nix-command flakes" run \
   github:nix-community/disko/latest -- --mode destroy,format,mount "$DISKO_FILE"
 
