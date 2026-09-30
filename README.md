@@ -64,7 +64,11 @@ The script (`installer/bootstrap.sh`) clones the repo, then:
 
 If any step fails (wrong password, mistyped LUKS passphrase, network drop, build error), the script prints which step it was on and what to check, instead of just silently dying. Just re-run the same command to retry from the top — the checkout, master-key fetch and disko steps are all safe to repeat.
 
-Then `systemctl reboot`. Hosts using `sshKeyPaths` (gaming-pc) don't need a master key; their host key can be pre-generated before install to keep the same fingerprint across reinstalls (otherwise expect `REMOTE HOST IDENTIFICATION HAS CHANGED` on clients — fix with `ssh-keygen -R <host>`).
+Once `nixos-install` succeeds the script automatically reboots after a 10s countdown (Ctrl-C to cancel and stay in the installer shell instead).
+
+**First login:** if the target host has `USER_PASSWORD_HASH` in its `secrets.yaml` (currently: laptop), your user password is set declaratively via sops on first boot — nothing to do. Hosts without that secret still need the old manual flow: log in as root, `passwd <user>`.
+
+Hosts using `sshKeyPaths` (gaming-pc) don't need a master key; their host key can be pre-generated before install to keep the same fingerprint across reinstalls (otherwise expect `REMOTE HOST IDENTIFICATION HAS CHANGED` on clients — fix with `ssh-keygen -R <host>`).
 
 <details>
 <summary>Manual steps (what the script automates)</summary>

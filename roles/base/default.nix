@@ -1,4 +1,4 @@
-{ username, ... }:
+{ username, config, lib, ... }:
 
 {
   imports = [
@@ -63,10 +63,15 @@
   # Configure console keymap
   console.keyMap = "sv-latin1";
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
+  # Define a user account. Password comes from sops (USER_PASSWORD_HASH) when
+  # that host has the secret defined (currently: laptop). Hosts without it
+  # fall back to the old manual `passwd` flow after first login.
   users.users.${username} = {
     isNormalUser = true;
     extraGroups = [ "wheel" "input" "video" ];
+    hashedPasswordFile = lib.mkIf
+      (config.sops.secrets ? USER_PASSWORD_HASH)
+      config.sops.secrets.USER_PASSWORD_HASH.path;
   };
 
   # SSH access

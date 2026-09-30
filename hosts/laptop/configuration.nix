@@ -46,6 +46,12 @@
       WIFI_PASSWORD_KEY = {
         owner = "wpa_supplicant";
       };
+      # neededForUsers: sops normally decrypts secrets AFTER NixOS creates
+      # users, but hashedPasswordFile needs the secret to exist BEFORE user
+      # creation. This makes sops decrypt it early, to /run/secrets-for-users.
+      USER_PASSWORD_HASH = {
+        neededForUsers = true;
+      };
       SSH_USER_ED25519_KEY = {
         path = "/home/${username}/.ssh/id_ed25519";
         owner = "${username}";

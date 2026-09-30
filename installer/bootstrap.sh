@@ -159,4 +159,6 @@ info "running nixos-install for $HOST"
 CURRENT_STEP="nixos-install (building/installing the system)"
 nixos-install --flake ".#$HOST"
 
-info "done. Reboot with:  systemctl reboot"
+info "install finished. Rebooting in 10s (Ctrl-C to cancel and stay in the installer)..."
+sleep 10
+systemctl reboot
