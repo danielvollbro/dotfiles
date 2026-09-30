@@ -28,7 +28,21 @@
   }@inputs:
   let
     username = "daniel";
+    # Bootstrap apps: one-command reinstall from a NixOS installer ISO, e.g.
+    #   sudo nix --experimental-features "nix-command flakes" run github:danielvollbro/dotfiles#laptop-install
+    # (clones the repo, wipes/partitions the disk via disko, places the master
+    # age key, runs nixos-install — see installer/bootstrap.sh)
+    bootstrapApp = pkgs: host: {
+      type = "app";
+      program = "${pkgs.writeShellScript "bootstrap-${host}" ''
+        exec ${pkgs.bash}/bin/bash ${./installer/bootstrap.sh} ${host} "$@"
+      ''}";
+    };
   in {
+    apps.x86_64-linux.laptop-install = bootstrapApp nixpkgs.legacyPackages.x86_64-linux "laptop";
+    apps.x86_64-linux.gaming-pc-install = bootstrapApp nixpkgs.legacyPackages.x86_64-linux "gaming-pc";
+
+
     nixosConfigurations.laptop = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit inputs; inherit username; };
