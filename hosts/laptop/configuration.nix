@@ -6,7 +6,7 @@
     ../../roles/hyprland/default.nix
     ../../roles/development/default.nix
     ../../roles/hermes-agent-ssh-access/default.nix
-    ../../modules/laptop-screen-watchdog/default.nix
+    ../../modules/custom/laptop-screen-watchdog/default.nix
     ./hardware-configuration.nix
   ];
 
