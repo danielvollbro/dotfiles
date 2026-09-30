@@ -100,10 +100,15 @@
     home.stateVersion = "26.05";
 
     home.packages = with pkgs; [
-      git
       firefox-bin
       bitwarden-desktop
     ];
+
+    programs.git = {
+      enable = true;
+      userName = "Daniel Vollbro";
+      userEmail = "daniel@vollbro.com";
+    };
 
     programs.home-manager.enable = true;
   };
