@@ -55,12 +55,14 @@ sudo nix --experimental-features "nix-command flakes" run github:danielvollbro/d
 # or: ...#gaming-pc-install
 ```
 
-The script (`installer/bootstrap.sh`) asks for a `destroy` confirmation before wiping the disk, then:
+The script (`installer/bootstrap.sh`) clones the repo, then:
 
-1. clones this repo to `/root/dotfiles` (reuses an existing checkout if present, hard-resetting it to `origin`'s default branch first; override the path with `DOTFILES_DIR`),
-2. wipes, partitions and mounts the target disk via the host's `disko.nix`,
-3. **laptop only:** fetches the master age key from Vaultwarden — `bw login` interactively prompts for your Vaultwarden email, master password and 2FA code (nothing scripted around the prompts), then reads the key from the secure note `master-age-key` (override with `BW_ITEM_NAME`; point `BW_KEY_FILE` at a local file to skip Vaultwarden entirely) and logs out. Places it at `/mnt/var/lib/sops/age/master.key` with `0600`.
+1. **laptop only:** fetches the master age key from Vaultwarden — `bw login` interactively prompts for your Vaultwarden email, master password and 2FA code (nothing scripted around the prompts), then reads the key from the secure note `master-age-key` (override with `BW_ITEM_NAME`; point `BW_KEY_FILE` at a local file to skip Vaultwarden entirely) and logs out. **Fetched before the disk is touched**, so a wrong password/2FA/network issue aborts safely with nothing destroyed yet.
+2. asks for a `destroy` confirmation, then wipes, partitions and mounts the target disk via the host's `disko.nix` (disko's own separate confirmation prompt is skipped with `--yes-wipe-all-disks` — you already confirmed once).
+3. places the master key at `/mnt/var/lib/sops/age/master.key` with `0600`.
 4. runs `nixos-install --flake .#<host>`.
+
+If any step fails (wrong password, mistyped LUKS passphrase, network drop, build error), the script prints which step it was on and what to check, instead of just silently dying. Just re-run the same command to retry from the top — the checkout, master-key fetch and disko steps are all safe to repeat.
 
 Then `systemctl reboot`. Hosts using `sshKeyPaths` (gaming-pc) don't need a master key; their host key can be pre-generated before install to keep the same fingerprint across reinstalls (otherwise expect `REMOTE HOST IDENTIFICATION HAS CHANGED` on clients — fix with `ssh-keygen -R <host>`).
 
