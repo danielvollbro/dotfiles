@@ -21,7 +21,7 @@ CHECKOUT="${DOTFILES_DIR:-/root/dotfiles}"
 KEY_DST="/mnt/var/lib/sops/age/master.key"
 # Vaultwarden secure note holding the master age key in its notes field.
 BW_ITEM_NAME="${BW_ITEM_NAME:-master-age-key}"
-BW_URL="${BW_URL:-https://vaultwarden.home.vollbro.se}"
+BW_URL="${BW_URL:-https://vault.vollbro.se}"
 
 die() { echo "ERROR: $*" >&2; exit 1; }
 info() { echo "==> $*"; }
@@ -78,22 +78,22 @@ if [ "$NEEDS_MASTER_KEY" -eq 1 ]; then
       info "using key from BW_KEY_FILE=$BW_KEY_FILE"
     else
       command -v bw >/dev/null || die "bitwarden CLI not found in PATH"
-      command -v jq >/dev/null || die "jq not found in PATH"
-      info "fetching master age key from Vaultwarden ($BW_URL)"
-      read -rsp "Vaultwarden master password: " BW_PW
-      echo
-
+      info "logging in to Vaultwarden ($BW_URL)"
       bw config server "$BW_URL" >/dev/null
-      # --passwordenv keeps the password out of argv/process listing;
-      # the session key only exists in this shell, notes decrypt locally.
-      BW_SESSION="$(BW_PASSWORD="$BW_PW" bw unlock --passwordenv BW_PASSWORD --raw)" \
-        || { unset BW_PW; die "bw unlock failed (wrong password or unreachable Vaultwarden?)"; }
-      unset BW_PW
 
+      # `bw login` runs fully interactively here: it prompts for email,
+      # master password, and (if enabled) the 2FA code — all handled by the
+      # CLI itself, nothing scripted around it. `--raw` makes it print just
+      # the session key on success (nothing captured on failure).
+      BW_SESSION="$(bw login --raw)" \
+        || die "bw login failed (wrong credentials/2FA, or Vaultwarden unreachable at $BW_URL?)"
+
+      KEY_SRC="$(mktemp)"
       bw get notes "$BW_ITEM_NAME" --session "$BW_SESSION" > "$KEY_SRC" \
-        || { unset BW_SESSION; rm -f "$KEY_SRC"; die "could not read notes of item '$BW_ITEM_NAME'"; }
-      unset BW_SESSION
+        || { bw logout >/dev/null 2>&1 || true; unset BW_SESSION; rm -f "$KEY_SRC"; die "could not read notes of item '$BW_ITEM_NAME'"; }
       chmod 600 "$KEY_SRC"
+      bw logout >/dev/null 2>&1 || true
+      unset BW_SESSION
       [ -s "$KEY_SRC" ] || { rm -f "$KEY_SRC"; die "item '$BW_ITEM_NAME' has an empty notes field"; }
     fi
 
