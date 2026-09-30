@@ -59,7 +59,7 @@ The script (`installer/bootstrap.sh`) asks for a `destroy` confirmation before w
 
 1. clones this repo to `/root/dotfiles` (reuses an existing checkout if present; override with `DOTFILES_DIR`),
 2. wipes, partitions and mounts the target disk via the host's `disko.nix`,
-3. **laptop only:** fetches the master age key from Vaultwarden — prompts for the master password, unlocks with the Bitwarden CLI (`bw`, included in the app's PATH) and reads the key from the secure note `master-age-key` (override with `BW_ITEM_NAME`; point `BW_KEY_FILE` at a local file to skip Vaultwarden). Places it at `/mnt/var/lib/sops/age/master.key` with `0600`.
+3. **laptop only:** fetches the master age key from Vaultwarden — `bw login` interactively prompts for your Vaultwarden email, master password and 2FA code (nothing scripted around the prompts), then reads the key from the secure note `master-age-key` (override with `BW_ITEM_NAME`; point `BW_KEY_FILE` at a local file to skip Vaultwarden entirely) and logs out. Places it at `/mnt/var/lib/sops/age/master.key` with `0600`.
 4. runs `nixos-install --flake .#<host>`.
 
 Then `systemctl reboot`. Hosts using `sshKeyPaths` (gaming-pc) don't need a master key; their host key can be pre-generated before install to keep the same fingerprint across reinstalls (otherwise expect `REMOTE HOST IDENTIFICATION HAS CHANGED` on clients — fix with `ssh-keygen -R <host>`).

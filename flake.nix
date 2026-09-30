@@ -36,7 +36,7 @@
       type = "app";
       program = "${pkgs.writeShellScript "bootstrap-${host}" ''
         export PATH="${pkgs.lib.makeBinPath [
-          pkgs.bash pkgs.coreutils pkgs.git pkgs.bitwarden-cli pkgs.jq
+          pkgs.bash pkgs.coreutils pkgs.git pkgs.bitwarden-cli
         ]}:$PATH"
         exec ${pkgs.bash}/bin/bash ${./installer/bootstrap.sh} ${host} "$@"
       ''}";
