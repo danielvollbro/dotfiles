@@ -48,7 +48,24 @@ Hosts compose `roles/`, roles import `modules/`. Nothing host-specific lives in 
 
 ### Installing / reinstalling a machine
 
-The only manual secret step happens in the installer environment, before `nixos-install`:
+One command from the installer ISO does everything (clone → disko → master key → `nixos-install`):
+
+```bash
+sudo nix --experimental-features "nix-command flakes" run github:danielvollbro/dotfiles#laptop-install
+# or: ...#gaming-pc-install
+```
+
+The script (`installer/bootstrap.sh`) asks for a `destroy` confirmation before wiping the disk, then:
+
+1. clones this repo to `/root/dotfiles` (reuses an existing checkout if present; override with `DOTFILES_DIR`),
+2. wipes, partitions and mounts the target disk via the host's `disko.nix`,
+3. **laptop only:** finds and places the master age key at `/mnt/var/lib/sops/age/master.key` — it looks in common paths and tries to mount the Ventoy USB's data partition read-only; if it can't find the key it asks for a path (name it `master-age.key` on the USB),
+4. runs `nixos-install --flake .#<host>`.
+
+Then `systemctl reboot`. Hosts using `sshKeyPaths` (gaming-pc) don't need a master key; their host key can be pre-generated before install to keep the same fingerprint across reinstalls (otherwise expect `REMOTE HOST IDENTIFICATION HAS CHANGED` on clients — fix with `ssh-keygen -R <host>`).
+
+<details>
+<summary>Manual steps (what the script automates)</summary>
 
 1. Boot the NixOS installer (Ventoy USB), mount your target at `/mnt` as usual, and clone the repo.
 2. Provide the decryption identity for the installed system:
@@ -67,6 +84,8 @@ The only manual secret step happens in the installer environment, before `nixos-
    sudo nixos-install --flake ~/code/nixos#laptop
    ```
 4. Reboot. From the first activation onwards, `sops-install-secrets` decrypts with the configured identity (master key on the laptop, SSH host key on `sshKeyPaths` hosts).
+
+</details>
 
 > **Rotating the SSH host key** (fresh keygen, or reinstall without step 2 on a `sshKeyPaths` host) changes the machine's fingerprint — expect `REMOTE HOST IDENTIFICATION HAS CHANGED` and update clients with `ssh-keygen -R <host>`.
 
