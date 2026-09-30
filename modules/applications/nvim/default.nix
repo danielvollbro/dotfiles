@@ -3,7 +3,7 @@
 {
   home-manager.users.${username} = { ... }: {
     home.packages = with pkgs; [
-      make
+      gnumake
       neovim
       ripgrep
     ];
