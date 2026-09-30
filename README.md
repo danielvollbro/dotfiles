@@ -40,7 +40,7 @@ Hosts compose `roles/`, roles import `modules/`. Nothing host-specific lives in 
 - Each host has its own `hosts/<host>/secrets.yaml`, encrypted with [sops](https://github.com/getsops/sops) and committed to the repo (ciphertext in git is fine — that's the point).
 - `.sops.yaml` in the repo root defines **creation rules**: which age public keys each secrets file is encrypted against. sops picks the right rule automatically based on the file path.
 - Secrets are encrypted against **multiple recipients** (any one of the private keys can decrypt):
-  - `master_age_key` — a standalone age key that lives on the install/rescue USB (Ventoy) **and** in Bitwarden. It is never committed to this repo and can decrypt everything in an emergency.
+  - `master_age_key` — a standalone age key stored as a **secure note (`master-age-key`) in the self-hosted Vaultwarden** (and on the rescue USB as backup). It is never committed to this repo and can decrypt everything in an emergency.
   - The hosts' SSH host keys / user SSH keys (public halves, converted to age format via `ssh-to-age`).
 - **The laptop decrypts with the master age key** (`age.keyFile = "/var/lib/sops/age/master.key"` in `hosts/laptop/configuration.nix`). That file is root-only on the LUKS-encrypted disk. Semantics: when `age.keyFile` is set it is the **only** identity — `age.sshKeyPaths` is ignored, and a missing file makes decryption fail hard. Keep backups of the master key (USB + Bitwarden).
 - **The gaming PC decrypts with its SSH host key** (`age.sshKeyPaths`, no `age.keyFile`).
@@ -59,7 +59,7 @@ The script (`installer/bootstrap.sh`) asks for a `destroy` confirmation before w
 
 1. clones this repo to `/root/dotfiles` (reuses an existing checkout if present; override with `DOTFILES_DIR`),
 2. wipes, partitions and mounts the target disk via the host's `disko.nix`,
-3. **laptop only:** finds and places the master age key at `/mnt/var/lib/sops/age/master.key` — it looks in common paths and tries to mount the Ventoy USB's data partition read-only; if it can't find the key it asks for a path (name it `master-age.key` on the USB),
+3. **laptop only:** fetches the master age key from Vaultwarden — prompts for the master password, unlocks with the Bitwarden CLI (`bw`, included in the app's PATH) and reads the key from the secure note `master-age-key` (override with `BW_ITEM_NAME`; point `BW_KEY_FILE` at a local file to skip Vaultwarden). Places it at `/mnt/var/lib/sops/age/master.key` with `0600`.
 4. runs `nixos-install --flake .#<host>`.
 
 Then `systemctl reboot`. Hosts using `sshKeyPaths` (gaming-pc) don't need a master key; their host key can be pre-generated before install to keep the same fingerprint across reinstalls (otherwise expect `REMOTE HOST IDENTIFICATION HAS CHANGED` on clients — fix with `ssh-keygen -R <host>`).
