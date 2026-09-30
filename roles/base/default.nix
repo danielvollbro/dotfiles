@@ -2,7 +2,6 @@
 
 {
   imports = [
-    ../../modules/git/default.nix
     ../../modules/nvim/default.nix
   ];
 
@@ -97,6 +96,7 @@
     home.stateVersion = "26.05";
 
     home.packages = with pkgs; [
+      git
       firefox-bin
       bitwarden-desktop
     ];

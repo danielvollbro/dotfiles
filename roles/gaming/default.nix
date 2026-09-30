@@ -1,7 +1,18 @@
-{ ... }:
+{ pkgs, ... }:
 {
-  imports = [
-    ../../modules/steam/default.nix
-    ../../modules/lutris/default.nix
+  programs.steam = {
+    enable = true;
+  };
+
+  environment.systemPackages = with pkgs; [
+    lutris
+
+    (lutris.override {
+      # List of additional system libraries
+      extraLibraries = pkgs: [ ];
+
+      # List of additional system packages    
+      extraPkgs = pkgs: [ ];
+    })
   ];
 }

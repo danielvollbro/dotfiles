@@ -7,6 +7,7 @@
     ../../roles/hermes-agent-ssh-access/default.nix
     ../../roles/private-ssh-access/default.nix
     ../../roles/remote-machine/kde.nix
+    ../../modules/hardware/gpu/rtx3070/default.nix
     ./hardware-configuration.nix
   ];
 
