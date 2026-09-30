@@ -4,14 +4,35 @@
   imports = [
     ../../roles/base/default.nix
     ../../roles/hyprland/default.nix
-    ../../roles/dell-xps-13/default.nix
     ../../roles/development/default.nix
     ../../roles/hermes-agent-ssh-access/default.nix
+    ../../modules/laptop-screen-watchdog/default.nix
     ./hardware-configuration.nix
   ];
 
   home-manager.users.${username} = { ... }: {
-    home.packages = with pkgs; [ sops ];
+    home.packages = with pkgs; [
+      sops
+    ];
+  };
+
+  # Aggressive runtime power management (USB autosuspend, PCIe, audio codecs)
+  powerManagement.powertop.enable = true;
+
+  # Audio
+  security.rtkit.enable = true;
+
+  # Warm dark GTK theme
+  programs.dconf.enable = true;
+  qt = {
+    enable = true;
+    platformTheme = "qt5ct";
+    style = "kvantum";
+  };
+
+  systemd.services.dhcpcd.serviceConfig = {
+    StandardOutput = "journal";
+    StandardError = "journal";
   };
 
   # Sops
@@ -19,10 +40,7 @@
     defaultSopsFile = ./secrets.yaml;
     validateSopsFiles = true;
 
-    age.sshKeyPaths = [
-      "/etc/ssh/ssh_host_ed25519_key"
-      "/home/${username}/.ssh/id_ed25519"
-    ];
+    age.keyFile = "/var/lib/sops/age/master.key";
 
     secrets = {
       WIFI_PASSWORD_KEY = {
@@ -64,19 +82,101 @@
     };
   };
 
-  networking.wireless = {
-    enable = true;
-    secretsFile = config.sops.templates."wireless.env".path;
-    networks."Wollbro_Main".pskRaw = "ext:WIFI_PASSWORD_KEY";
+  environment = { 
+    systemPackages = with pkgs; [
+      # System
+      brightnessctl
+      wireplumber
+      playerctl
+      mako
+      libva-utils
+      yazi
+      wget
+      xclip
+      kanshi
+      grim
+    ];
+
+    sessionVariables = {
+      LIBVA_DRIVER_NAME = "iHD";
+    };
   };
 
-  networking.hostName = "daniel-laptop"; # Define your hostname.
+  networking = {
+    wireless = {
+      enable = true;
+      userControlled = true;
+      secretsFile = config.sops.templates."wireless.env".path;
+      networks."Wollbro_Main".pskRaw = "ext:WIFI_PASSWORD_KEY";
+    };
 
-  # Warm dark GTK theme
-  programs.dconf.enable = true;
-  qt.enable = true;
-  qt.platformTheme = "qt5ct";
-  qt.style = "kvantum";
+    hostName = "daniel-laptop";
+  };
+
+  hardware = {
+    enableRedistributableFirmware = true;
+    bluetooth = {
+      enable = true;
+      powerOnBoot = true;
+    };
+
+    graphics = {
+      enable = true;
+      extraPackages = with pkgs; [
+        intel-media-driver
+        libvdpau-va-gl
+      ];
+    };
+  };
+
+  services = {
+    blueman.enable = true;
+
+    # Battery management
+    tlp = {
+      enable = true;
+      settings = {
+        CPU_SCALING_GOVERNOR_ON_AC = "performance";
+        CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+        CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+        CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+        PLATFORM_PROFILE_ON_AC = "performance";
+        PLATFORM_PROFILE_ON_BAT = "low-power";
+        PCIE_ASPM_ON_BAT = "powersupersave";
+        RUNTIME_PM_ON_BAT = "auto";
+        WIFI_PWR_ON_BAT = "on";
+        START_CHARGE_THRESH_BAT0 = 50;
+        STOP_CHARGE_THRESH_BAT0 = 80;
+      };
+    };
+    power-profiles-daemon.enable = false;
+
+    # What happens when you close the lid
+    logind.settings.Login = {
+      HandleLidSwitch = "hibernate";
+      HandleLidSwitchExternalPower = "ignore";
+    };
+
+    # SSD improvements
+    fstrim.enable = true;
+
+    # Sound
+    pipewire = {
+      enable = true;
+      pulse.enable = true;
+
+      alsa = {
+        enable = true;
+        support32Bit = true;
+      };
+    };
+
+    # Touchpad
+    libinput = {
+      enable = true;
+      touchpad.disableWhileTyping = true;
+    };
+  };
 
   # Do NOT change this value unless you have manually inspected all the changes it would make to your configuration,
   # and migrated your data accordingly.
