@@ -77,12 +77,11 @@
       KbdInteractiveAuthentication = false;
       PermitRootLogin = "no";
     };
-    hostKeys = [
-      {
-        path = "/etc/ssh/ssh_host_ed25519_key";
-        type = "ed25519";
-      }
-    ];
+    # NOTE: do NOT add `hostKeys` paths here. sshd generates default host keys
+    # automatically when none are specified. Explicitly pinning a path while the
+    # key is no longer delivered by sops (SSH host keys are not secrets anymore)
+    # breaks `sshd` on fresh installs: the mapped path never gets a key generated
+    # and the unit fails until the file is created manually.
   };
 
   networking.firewall.enable = true;

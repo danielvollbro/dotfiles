@@ -20,7 +20,9 @@
       kernelModules = [ ];
       luks.devices = {
         "cryptroot" = {
-          device = "/dev/disk/by-uuid/8c7cead3-f6b7-4a83-957c-2813bf174d5d";
+          # /dev/disk/by-partlabel/disk-main-luksRoot — set by disko, stable
+          # across reinstalls (unlike UUIDs, which change on every reformat).
+          device = "/dev/disk/by-partlabel/disk-main-luksRoot";
         };
         "cryptswap" = {
           device = "/dev/disk/by-partlabel/disk-main-luksSwap";
@@ -38,7 +40,9 @@
     };
 
     "/boot" = {
-      device = "/dev/disk/by-uuid/B70D-FB96";
+      # /dev/disk/by-partlabel/disk-main-ESP — set by disko, stable across
+      # reinstalls (unlike the vfat UUID, which changes on every reformat).
+      device = "/dev/disk/by-partlabel/disk-main-ESP";
       fsType = "vfat";
       options = [ "fmask=0077" "dmask=0077" ];
     };
