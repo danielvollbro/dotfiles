@@ -39,34 +39,36 @@ Hosts compose `roles/`, roles import `modules/`. Nothing host-specific lives in 
 
 - Each host has its own `hosts/<host>/secrets.yaml`, encrypted with [sops](https://github.com/getsops/sops) and committed to the repo (ciphertext in git is fine — that's the point).
 - `.sops.yaml` in the repo root defines **creation rules**: which age public keys each secrets file is encrypted against. sops picks the right rule automatically based on the file path.
-- Every host's secrets are encrypted against **multiple recipients**:
-  - `master_age_key` — a standalone age key that lives **only on the install/rescue USB** (Ventoy). It is never stored on any machine and can decrypt everything in an emergency.
-  - The host's own SSH host key (converted to age format via `ssh-to-age`).
-  - (laptop only) the user SSH key.
-- At activation, `sops-install-secrets` uses the host's SSH host key (via `age.sshKeyPaths` in each host's `configuration.nix`) as its age identity to decrypt. **No `age.keyFile` is set on purpose** — the master key must never be required at rest on a machine.
-- The SSH host key *itself* is delivered by sops (`SSH_HOST_ED25519_KEY` secret written to `/etc/ssh/ssh_host_ed25519_key`), so it survives reinstalls unchanged — your `known_hosts` entries keep working, and the key is always available to decrypt the next boot's secrets.
+- Secrets are encrypted against **multiple recipients** (any one of the private keys can decrypt):
+  - `master_age_key` — a standalone age key that lives on the install/rescue USB (Ventoy) **and** in Bitwarden. It is never committed to this repo and can decrypt everything in an emergency.
+  - The hosts' SSH host keys / user SSH keys (public halves, converted to age format via `ssh-to-age`).
+- **The laptop decrypts with the master age key** (`age.keyFile = "/var/lib/sops/age/master.key"` in `hosts/laptop/configuration.nix`). That file is root-only on the LUKS-encrypted disk. Semantics: when `age.keyFile` is set it is the **only** identity — `age.sshKeyPaths` is ignored, and a missing file makes decryption fail hard. Keep backups of the master key (USB + Bitwarden).
+- **The gaming PC decrypts with its SSH host key** (`age.sshKeyPaths`, no `age.keyFile`).
+- **SSH host keys are NOT secrets.** They are regular sshd-generated files (`/etc/ssh/ssh_host_*`), not delivered by sops. Do not add them back to `secrets.yaml`: a decryption identity that is itself a sops secret is a chicken-and-egg loop — the key needed to decrypt the secrets doesn't exist until after decryption. This took the laptop down at boot (no Wi-Fi PSK → no network, sshd without a host key) until it was removed.
 
 ### Installing / reinstalling a machine
 
 The only manual secret step happens in the installer environment, before `nixos-install`:
 
 1. Boot the NixOS installer (Ventoy USB), mount your target at `/mnt` as usual, and clone the repo.
-2. Extract the host's SSH key from its secrets file using the master key from the USB:
-   ```bash
-   export SOPS_AGE_KEY_FILE=/mnt/master-age.key   # adjust to your USB mount point
-
-   sops -d --extract '["SSH_HOST_ED25519_KEY"]' hosts/laptop/secrets.yaml \
-     | sudo tee /mnt/etc/ssh/ssh_host_ed25519_key > /dev/null
-   sudo chmod 600 /mnt/etc/ssh/ssh_host_ed25519_key
-
-   sops -d --extract '["SSH_HOST_ED25519_PUB_KEY"]' hosts/laptop/secrets.yaml \
-     | sudo tee /mnt/etc/ssh/ssh_host_ed25519_key.pub > /dev/null
-   ```
+2. Provide the decryption identity for the installed system:
+   - **Laptop (master key):** place the master age key where the config expects it, and keep the copy on the USB:
+     ```bash
+     sudo mkdir -p /mnt/var/lib/sops/age
+     sudo cp /path/to/master-age.key /mnt/var/lib/sops/age/master.key
+     sudo chmod 700 /mnt/var/lib/sops/age && sudo chmod 600 /mnt/var/lib/sops/age/master.key
+     ```
+   - **Hosts using `sshKeyPaths` (gaming-pc):** pre-generate SSH host keys so they don't rotate on reinstall:
+     ```bash
+     sudo mkdir -p /mnt/etc/ssh && sudo ssh-keygen -t ed25519 -f /mnt/etc/ssh/ssh_host_ed25519_key -N ""
+     ```
 3. Install:
    ```bash
    sudo nixos-install --flake ~/code/nixos#laptop
    ```
-4. Reboot. From the first activation onwards, `sops-install-secrets` decrypts everything with the host key — the master key is no longer needed and the USB can be removed.
+4. Reboot. From the first activation onwards, `sops-install-secrets` decrypts with the configured identity (master key on the laptop, SSH host key on `sshKeyPaths` hosts).
+
+> **Rotating the SSH host key** (fresh keygen, or reinstall without step 2 on a `sshKeyPaths` host) changes the machine's fingerprint — expect `REMOTE HOST IDENTIFICATION HAS CHANGED` and update clients with `ssh-keygen -R <host>`.
 
 ### Adding a new secret
 
@@ -89,18 +91,22 @@ The only manual secret step happens in the installer environment, before `nixos-
 ### Adding a new host
 
 1. Create `hosts/<new-host>/configuration.nix` (+ `hardware-configuration.nix`), import it in `flake.nix`, and add `sops-nix.nixosModules.sops` to its modules.
-2. Generate/collect the host's SSH keys and add its **public** key (converted to age format) to `.sops.yaml`:
-   ```bash
-   ssh-keygen -t ed25519 -f ./ssh_host_ed25519_key
-   nix run nixpkgs#ssh-to-age -- < ./ssh_host_ed25519_key.pub
-   # → age1... — add as a .keys anchor + creation_rules entry
-   ```
-3. Create `hosts/<new-host>/secrets.yaml` with at least `SSH_HOST_ED25519_KEY` / `SSH_HOST_ED25519_PUB_KEY`, encrypt it (`sops --encrypt --in-place`), and follow the install steps above.
-4. Referencing the host key in `.sops.yaml` before it's committed elsewhere is fine — sops only stores the public key, the private half travels via the secrets file itself.
+2. Decide the decryption identity and add the corresponding **public** key (converted to age format) to `.sops.yaml`:
+   - **Like the laptop** (`age.keyFile` → master key): no extra recipient needed beyond `master_age_key`.
+   - **Like the gaming PC** (`age.sshKeyPaths` → host key): pre-generate the host's SSH keys and convert:
+     ```bash
+     ssh-keygen -t ed25519 -f ./ssh_host_ed25519_key
+     nix run nixpkgs#ssh-to-age -- < ./ssh_host_ed25519_key.pub
+     # → age1... — add as a .keys anchor + creation_rules entry
+     ```
+     The generated private key must be placed at `/mnt/etc/ssh/ssh_host_ed25519_key` during install (see reinstall step 2).
+3. Create `hosts/<new-host>/secrets.yaml`, encrypt it (`sops --encrypt --in-place`), and follow the install steps above.
+4. Referencing a host key in `.sops.yaml` before it's committed elsewhere is fine — sops only stores the public key.
 
 ### Gotchas
 
-- **sops CLI vs NixOS:** `SOPS_AGE_KEY_FILE` only affects the `sops` CLI. `nixos-rebuild` decryption is done by `sops-install-secrets`, which uses `age.keyFile` (if set — and then *requires* that file to exist) or `age.sshKeyPaths`. This repo deliberately uses only `sshKeyPaths`.
+- **sops CLI vs NixOS:** `SOPS_AGE_KEY_FILE` only affects the `sops` CLI. `nixos-rebuild` decryption is done by `sops-install-secrets`, which uses `age.keyFile` (if set — and then *requires* that file to exist, with **no** fallback to `sshKeyPaths`) or `age.sshKeyPaths`. The laptop uses `keyFile` (master key), the gaming PC uses `sshKeyPaths`.
+- **Chicken-and-egg:** never make a decryption identity itself a sops secret (e.g. SSH host key delivered by sops while it is also the key that decrypts) — the secrets won't exist at boot and the machine comes up without network/sshd.
 - **Flakes ignore untracked files.** A new/changed `secrets.yaml` must be `git add`-ed (or committed) before `nixos-rebuild` sees it.
 - **`--age` takes public keys**, not key files — get the age pubkey of a key with `age-keygen -y <keyfile>`, and convert SSH pubkeys with `ssh-to-age`.
 - **Templates** (`sops.templates`) render secret *values* into files like the wpa_supplicant env file without ever putting plaintext in the nix store. Secrets referenced by a template are pulled in automatically via `config.sops.placeholder.<NAME>`.
