@@ -52,7 +52,13 @@ esac
 # --- 1. checkout ------------------------------------------------------------
 if [ -d "$CHECKOUT/.git" ]; then
   info "using existing checkout at $CHECKOUT"
-  git -C "$CHECKOUT" pull --ff-only || info "pull failed, continuing with local state"
+  git -C "$CHECKOUT" fetch origin
+  # This is a disposable installer-environment checkout, not user work, and
+  # a destructive disko run is coming right up — never proceed on a stale or
+  # locally-modified tree silently. Hard-reset to the remote default branch.
+  DEFAULT_BRANCH="$(git -C "$CHECKOUT" remote show origin | sed -n 's/.*HEAD branch: //p')"
+  git -C "$CHECKOUT" reset --hard "origin/${DEFAULT_BRANCH:-main}" \
+    || die "could not fast-forward $CHECKOUT to origin/${DEFAULT_BRANCH:-main} — fix or delete $CHECKOUT and re-run"
 else
   info "cloning $REPO_URL to $CHECKOUT"
   git clone "$REPO_URL" "$CHECKOUT"
@@ -88,6 +94,11 @@ if [ "$NEEDS_MASTER_KEY" -eq 1 ]; then
       command -v bw >/dev/null || die "bitwarden CLI not found in PATH"
       info "logging in to Vaultwarden ($BW_URL)"
       bw config server "$BW_URL" >/dev/null
+      # Pre-emptive logout: if a previous run crashed between login and
+      # logout (e.g. this same boot session, script re-run after a failure
+      # further down), bw would otherwise refuse a second `bw login` with
+      # "You are already logged in as X." Guarantee a clean slate.
+      bw logout >/dev/null 2>&1 || true
 
       # `bw login` runs fully interactively here: it prompts for email,
       # master password, and (if enabled) the 2FA code — all handled by the
