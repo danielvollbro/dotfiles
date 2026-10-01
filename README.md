@@ -51,9 +51,11 @@ Hosts compose `roles/`, roles import `modules/`. Nothing host-specific lives in 
 One command from the installer ISO does everything (clone → disko → master key → `nixos-install`):
 
 ```bash
-sudo nix --experimental-features "nix-command flakes" run github:danielvollbro/dotfiles#laptop-install
+sudo nix --experimental-features "nix-command flakes" run --refresh github:danielvollbro/dotfiles#laptop-install
 # or: ...#gaming-pc-install
 ```
+
+`--refresh` matters: `nix run github:...` is an unpinned ref and can otherwise serve a tarball-cached (up to 1h stale) copy of the installer script, which could run against a disko.nix that expects a newer version of it (e.g. the passwordFile-based LUKS flow below).
 
 The script (`installer/bootstrap.sh`) clones the repo, then:
 
