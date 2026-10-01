@@ -2,7 +2,16 @@
 # NixOS bootstrap installer for hosts in this flake.
 #
 # Run from a NixOS installer ISO (or any Linux with nix + internet):
-#   sudo nix --experimental-features "nix-command flakes" run github:danielvollbro/dotfiles#laptop-install
+#   sudo nix --experimental-features "nix-command flakes" run --refresh github:danielvollbro/dotfiles#laptop-install
+#
+# --refresh is required: without it, `nix run github:...` (an unpinned ref)
+# can serve a tarball-cached (up to 1h stale) copy of THIS SCRIPT even though
+# the repo clone step further down always fetches the latest disko.nix etc.
+# That mismatch is exactly how a stale bootstrap.sh (predating the
+# passwordFile-based LUKS flow) can run against a fresh disko.nix that
+# already expects /tmp/disko-luks.key to exist, producing a confusing
+# "cat: /tmp/disko-luks.key: No such file or directory" from inside disko
+# instead of a clear error from this script.
 #
 # The script:
 #   1. clones this repo (or reuses an existing checkout)
@@ -175,6 +184,12 @@ if [ ! -s "$LUKS_KEY_FILE" ]; then
 fi
 CURRENT_STEP="disko partitioning/formatting/encrypting the disk"
 [ -f "$DISKO_FILE" ] || die "disko config not found: $DISKO_FILE (does not exist in this repo yet)"
+# Defensive sanity check: disko.nix's passwordFile points here, and a stale
+# cached copy of this very script (see --refresh note at the top) could
+# otherwise skip the collection step above and let disko fail with a raw,
+# confusing "cat: .../disko-luks.key: No such file or directory" instead of
+# an actionable error.
+[ -s "$LUKS_KEY_FILE" ] || die "internal error: $LUKS_KEY_FILE missing before running disko — re-run with 'nix run --refresh ...' in case an older cached copy of this script ran"
 # --yes-wipe-all-disks skips disko's OWN separate 'type yes to wipe' prompt.
 # We already got explicit confirmation above; a second identical prompt from
 # disko itself is redundant, not extra safety.
