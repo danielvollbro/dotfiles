@@ -6,8 +6,10 @@
 #
 # The script:
 #   1. clones this repo (or reuses an existing checkout)
-#   2. fetches the master age key from Vaultwarden (laptop only) — BEFORE
-#      touching the disk, so a failed fetch aborts safely
+#   2. fetches the master age key AND the LUKS passphrase from Vaultwarden
+#      (laptop only) — BEFORE touching the disk, so a failed fetch aborts
+#      safely. Falls back to an interactive retry-looped prompt for the LUKS
+#      passphrase if it isn't saved in the vault.
 #   3. wipes and partitions the target disk with disko
 #   4. places the master key onto the new install
 #   5. runs nixos-install with the host's flake configuration
@@ -43,6 +45,10 @@ CHECKOUT="${DOTFILES_DIR:-/root/dotfiles}"
 KEY_DST="/mnt/var/lib/sops/age/master.key"
 # Vaultwarden secure note holding the master age key in its notes field.
 BW_ITEM_NAME="${BW_ITEM_NAME:-master-age-key}"
+# Optional secure note holding the LUKS passphrase (same passphrase used for
+# both luksRoot and luksSwap). If absent/empty, falls back to an interactive
+# retry-looped prompt — never a hard requirement.
+BW_LUKS_ITEM_NAME="${BW_LUKS_ITEM_NAME:-laptop-luks-passphrase}"
 BW_URL="${BW_URL:-https://vault.vollbro.se}"
 
 die() { echo "ERROR: $*" >&2; exit 1; }
@@ -81,12 +87,14 @@ else
 fi
 cd "$CHECKOUT"
 
-# --- 2. master age key (from Vaultwarden, BEFORE disko) --------------------
-CURRENT_STEP="fetching the master key from Vaultwarden"
+# --- 2. master age key + LUKS passphrase (from Vaultwarden, BEFORE disko) --
+CURRENT_STEP="fetching secrets from Vaultwarden"
 # Fetched before the destructive step: if this fails (wrong Vaultwarden
 # password, 2FA typo, network unreachable) you can abort with the disk
 # still untouched instead of finding out after it's already wiped.
 KEY_TMP=""
+LUKS_KEY_FILE="/tmp/disko-luks.key"
+rm -f "$LUKS_KEY_FILE"
 if [ "$NEEDS_MASTER_KEY" -eq 1 ]; then
   KEY_SRC=""
   if [ -n "${BW_KEY_FILE:-}" ] && [ -f "$BW_KEY_FILE" ]; then
@@ -113,10 +121,24 @@ if [ "$NEEDS_MASTER_KEY" -eq 1 ]; then
     bw get notes "$BW_ITEM_NAME" --session "$BW_SESSION" > "$KEY_TMP" \
       || { bw logout >/dev/null 2>&1 || true; unset BW_SESSION; rm -f "$KEY_TMP"; die "could not read notes of item '$BW_ITEM_NAME' — disk not touched yet"; }
     chmod 600 "$KEY_TMP"
+    [ -s "$KEY_TMP" ] || { bw logout >/dev/null 2>&1 || true; rm -f "$KEY_TMP"; die "item '$BW_ITEM_NAME' has an empty notes field — disk not touched yet"; }
+    KEY_SRC="$KEY_TMP"
+
+    # Same Vaultwarden session also provides the LUKS passphrase, if saved —
+    # one login instead of two. Purely optional: a missing/empty note just
+    # falls through to the interactive retry-loop prompt below, same as if
+    # Vaultwarden weren't involved at all.
+    ( umask 077
+      bw get notes "$BW_LUKS_ITEM_NAME" --session "$BW_SESSION" > "$LUKS_KEY_FILE" 2>/dev/null
+    ) || true
+    if [ -s "$LUKS_KEY_FILE" ]; then
+      info "using LUKS passphrase from Vaultwarden item '$BW_LUKS_ITEM_NAME'"
+    else
+      rm -f "$LUKS_KEY_FILE"
+    fi
+
     bw logout >/dev/null 2>&1 || true
     unset BW_SESSION
-    [ -s "$KEY_TMP" ] || { rm -f "$KEY_TMP"; die "item '$BW_ITEM_NAME' has an empty notes field — disk not touched yet"; }
-    KEY_SRC="$KEY_TMP"
   fi
 fi
 
@@ -128,29 +150,29 @@ echo "  host:    $HOST"
 echo "  disko:   $DISKO_FILE"
 echo "============================================================"
 read -r -p "Type 'destroy' to continue: " ANSWER
-[ "$ANSWER" = "destroy" ] || { [ -n "$KEY_TMP" ] && rm -f "$KEY_TMP"; die "aborted"; }
+[ "$ANSWER" = "destroy" ] || { [ -n "$KEY_TMP" ] && rm -f "$KEY_TMP"; rm -f "$LUKS_KEY_FILE"; die "aborted"; }
 
 info "running disko (partition + format + mount)"
-CURRENT_STEP="collecting the LUKS encryption passphrase"
-# Prompt here ourselves, with a real retry loop, instead of letting disko
-# (or the installer's double-entry prompt) ask once with zero tolerance for
-# a typo. A single mismatch used to abort the whole install — with the disk
-# already wiped, since disko's own prompt comes mid-operation. This way a
-# mismatch just loops back to try again, nothing touched yet.
-LUKS_KEY_FILE="/tmp/disko-luks.key"
-rm -f "$LUKS_KEY_FILE"
-( umask 077
-  while true; do
-    read -r -s -p "Enter LUKS passphrase (used for both root and swap): " LUKS_PASS_1; echo
-    read -r -s -p "Re-enter to confirm: " LUKS_PASS_2; echo
-    if [ "$LUKS_PASS_1" = "$LUKS_PASS_2" ] && [ -n "$LUKS_PASS_1" ]; then
-      printf '%s' "$LUKS_PASS_1" > "$LUKS_KEY_FILE"
-      break
-    fi
-    echo "Passphrases did not match (or were empty) — try again." >&2
-  done
-)
-unset LUKS_PASS_1 LUKS_PASS_2
+if [ ! -s "$LUKS_KEY_FILE" ]; then
+  CURRENT_STEP="collecting the LUKS encryption passphrase"
+  # Prompt here ourselves, with a real retry loop, instead of letting disko
+  # (or the installer's double-entry prompt) ask once with zero tolerance for
+  # a typo. A single mismatch used to abort the whole install — with the disk
+  # already wiped, since disko's own prompt comes mid-operation. This way a
+  # mismatch just loops back to try again, nothing touched yet.
+  ( umask 077
+    while true; do
+      read -r -s -p "Enter LUKS passphrase (used for both root and swap): " LUKS_PASS_1; echo
+      read -r -s -p "Re-enter to confirm: " LUKS_PASS_2; echo
+      if [ "$LUKS_PASS_1" = "$LUKS_PASS_2" ] && [ -n "$LUKS_PASS_1" ]; then
+        printf '%s' "$LUKS_PASS_1" > "$LUKS_KEY_FILE"
+        break
+      fi
+      echo "Passphrases did not match (or were empty) — try again." >&2
+    done
+  )
+  unset LUKS_PASS_1 LUKS_PASS_2
+fi
 CURRENT_STEP="disko partitioning/formatting/encrypting the disk"
 [ -f "$DISKO_FILE" ] || die "disko config not found: $DISKO_FILE (does not exist in this repo yet)"
 # --yes-wipe-all-disks skips disko's OWN separate 'type yes to wipe' prompt.
