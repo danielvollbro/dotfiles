@@ -16,6 +16,10 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote/v1.1.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -24,6 +28,7 @@
     home-manager,
     nixos-hardware,
     sops-nix,
+    lanzaboote,
     ...
   }@inputs:
   let
@@ -59,6 +64,7 @@
           home-manager.users.${username} = import ./home/laptop.nix;
         }
         sops-nix.nixosModules.sops
+        lanzaboote.nixosModules.lanzaboote
       ];
     };
     nixosConfigurations.gaming-pc = nixpkgs.lib.nixosSystem {
