@@ -106,8 +106,10 @@
 
     programs.git = {
       enable = true;
-      userName = "Daniel Vollbro";
-      userEmail = "daniel@vollbro.com";
+      settings.user = {
+        name = "Daniel Vollbro";
+        email = "daniel@vollbro.com";
+      };
     };
 
     programs.home-manager.enable = true;
