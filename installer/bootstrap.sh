@@ -131,13 +131,34 @@ read -r -p "Type 'destroy' to continue: " ANSWER
 [ "$ANSWER" = "destroy" ] || { [ -n "$KEY_TMP" ] && rm -f "$KEY_TMP"; die "aborted"; }
 
 info "running disko (partition + format + mount)"
-CURRENT_STEP="disko partitioning/formatting/encrypting the disk (check: did you retype the LUKS passphrase correctly?)"
+CURRENT_STEP="collecting the LUKS encryption passphrase"
+# Prompt here ourselves, with a real retry loop, instead of letting disko
+# (or the installer's double-entry prompt) ask once with zero tolerance for
+# a typo. A single mismatch used to abort the whole install — with the disk
+# already wiped, since disko's own prompt comes mid-operation. This way a
+# mismatch just loops back to try again, nothing touched yet.
+LUKS_KEY_FILE="/tmp/disko-luks.key"
+rm -f "$LUKS_KEY_FILE"
+( umask 077
+  while true; do
+    read -r -s -p "Enter LUKS passphrase (used for both root and swap): " LUKS_PASS_1; echo
+    read -r -s -p "Re-enter to confirm: " LUKS_PASS_2; echo
+    if [ "$LUKS_PASS_1" = "$LUKS_PASS_2" ] && [ -n "$LUKS_PASS_1" ]; then
+      printf '%s' "$LUKS_PASS_1" > "$LUKS_KEY_FILE"
+      break
+    fi
+    echo "Passphrases did not match (or were empty) — try again." >&2
+  done
+)
+unset LUKS_PASS_1 LUKS_PASS_2
+CURRENT_STEP="disko partitioning/formatting/encrypting the disk"
 [ -f "$DISKO_FILE" ] || die "disko config not found: $DISKO_FILE (does not exist in this repo yet)"
 # --yes-wipe-all-disks skips disko's OWN separate 'type yes to wipe' prompt.
 # We already got explicit confirmation above; a second identical prompt from
 # disko itself is redundant, not extra safety.
 nix --experimental-features "nix-command flakes" run \
   github:nix-community/disko/latest -- --mode destroy,format,mount --yes-wipe-all-disks "$DISKO_FILE"
+shred -u "$LUKS_KEY_FILE" 2>/dev/null || rm -f "$LUKS_KEY_FILE"
 
 # --- 3.5 swap keyfile (laptop) ----------------------------------------------
 # The laptop's encrypted swap (cryptswap) is NOT enrolled in the TPM — it is
@@ -182,7 +203,18 @@ fi
 # --- 5. install --------------------------------------------------------------
 info "running nixos-install for $HOST"
 CURRENT_STEP="nixos-install (building/installing the system)"
-nixos-install --flake ".#$HOST"
+NIXOS_INSTALL_ARGS=(--flake ".#$HOST")
+if [ "$HOST" = "laptop" ]; then
+  # --no-root-passwd: skip nixos-install's own interactive root password
+  # prompt entirely. Only safe where a real login path already exists
+  # without it — laptop's user password is set declaratively via sops
+  # (USER_PASSWORD_HASH) and root login is disabled everywhere anyway
+  # (PermitRootLogin "no", no password SSH auth). gaming-pc has no such
+  # secret yet and still relies on the manual root/passwd flow from the
+  # README, so it keeps the interactive prompt.
+  NIXOS_INSTALL_ARGS+=(--no-root-passwd)
+fi
+nixos-install "${NIXOS_INSTALL_ARGS[@]}"
 
 info "install finished. Rebooting in 10s (Ctrl-C to cancel and stay in the installer)..."
 sleep 10
