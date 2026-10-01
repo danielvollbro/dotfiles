@@ -13,6 +13,9 @@
   home-manager.users.${username} = { ... }: {
     home.packages = with pkgs; [
       sops
+      unzip
+
+      sbctl
     ];
   };
 
@@ -34,6 +37,17 @@
     StandardOutput = "journal";
     StandardError = "journal";
   };
+
+  # TPM
+  boot.initrd.systemd.enable = true;
+  boot.initrd.availableKernelModules = [
+    "tpm_crb" "tpm_tis"
+  ];
+
+  boot.initrd.luks.devices."cryptroot".crypttabExtraOpts = [
+    "tpm2-device=auto"
+    "tpm2-pcrs=0+2+7+12"
+  ];
 
   # Sops
   sops = {
