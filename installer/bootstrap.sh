@@ -195,7 +195,9 @@ CURRENT_STEP="disko partitioning/formatting/encrypting the disk"
 # disko itself is redundant, not extra safety.
 nix --experimental-features "nix-command flakes" run \
   github:nix-community/disko/latest -- --mode destroy,format,mount --yes-wipe-all-disks "$DISKO_FILE"
-shred -u "$LUKS_KEY_FILE" 2>/dev/null || rm -f "$LUKS_KEY_FILE"
+# NOTE: $LUKS_KEY_FILE is deliberately NOT shredded yet — the swap keyfile
+# step right below still needs it to authenticate against cryptswap
+# non-interactively. Shredded further down once that's done.
 
 # --- 3.5 swap keyfile (laptop) ----------------------------------------------
 # The laptop's encrypted swap (cryptswap) is NOT enrolled in the TPM — it is
@@ -213,14 +215,15 @@ if [ "$HOST" = "laptop" ]; then
   dd if=/dev/urandom of="$SWAP_KEY_DST" bs=4096 count=1
   chmod 600 "$SWAP_KEY_DST"
   CURRENT_STEP="adding the swap keyfile to the cryptswap LUKS header"
-  # cryptsetup needs to authenticate against the header before it can add a
-  # new key slot, so this prompts for the LUKS passphrase you just set for
-  # cryptswap during disko a moment ago — expected, not a hang or a bug.
-  info "cryptsetup will ask for the cryptswap LUKS passphrase you just set (to authorize adding the new keyfile slot)"
-  cryptsetup luksAddKey "$SWAP_PART" "$SWAP_KEY_DST" \
+  # --key-file reads the just-collected LUKS passphrase from $LUKS_KEY_FILE
+  # non-interactively (same passphrase disko used to format cryptswap),
+  # instead of prompting again for something already typed once this run.
+  info "adding the swap keyfile using the LUKS passphrase collected earlier (no prompt)"
+  cryptsetup luksAddKey --key-file "$LUKS_KEY_FILE" "$SWAP_PART" "$SWAP_KEY_DST" \
     || die "could not add keyfile to $SWAP_PART — check the partition exists and the LUKS header is intact"
   info "swap keyfile enrolled"
 fi
+shred -u "$LUKS_KEY_FILE" 2>/dev/null || rm -f "$LUKS_KEY_FILE"
 
 # --- 4. place master key -----------------------------------------------------
 CURRENT_STEP="placing the master key onto the new install"
