@@ -108,6 +108,25 @@
     };
   };
 
+  # sops-nix creates the parent directory of any secret `path` that doesn't
+  # already exist (here: ~/.ssh, for the two SSH_USER_ED25519_* secrets
+  # above) itself, but — by sops-nix design, see Mic92/sops-nix#381/#391 —
+  # that parent directory is always created as root:root 0751, never
+  # inheriting the secret's own owner/group. Without this fix ~/.ssh stays
+  # root-owned forever, so `git clone`/ssh fail to write known_hosts
+  # ("Permission denied") despite the keys inside it being correctly owned.
+  # Re-chowning on every activation is idempotent and cheap, and self-heals
+  # if ~/.ssh gets wiped/recreated by sops-nix again on some future rebuild.
+  system.activationScripts.ssh-dir-ownership = {
+    text = ''
+      mkdir -p /home/${username}/.ssh
+      chown ${username}:users /home/${username}/.ssh
+      chmod 700 /home/${username}/.ssh
+    '';
+    deps = [ "users" ];
+  };
+  systemd.services.sops-install-secrets.after = [ "ssh-dir-ownership" ];
+
   environment = { 
     systemPackages = with pkgs; [
       # System
