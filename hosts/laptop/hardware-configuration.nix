@@ -30,7 +30,16 @@
           # Unlocked with a keyfile on the (TPM-unlocked) root filesystem,
           # so swap opens automatically after cryptroot — no passphrase,
           # no separate TPM enrollment. Kept 0600 root-owned.
-          keyFile = "/var/lib/luks-swap.key";
+          #
+          # Path MUST be under /sysroot: this host uses systemd stage 1
+          # (boot.initrd.systemd.enable = true, required for the TPM2
+          # crypttab options on cryptroot), which mounts the root fs at
+          # /sysroot during initrd — not / and not /mnt-root. A keyFile
+          # path without that prefix resolves to a nonexistent file inside
+          # the initrd's own tmpfs, so cryptswap silently falls back to an
+          # interactive passphrase prompt every boot instead of using the
+          # keyfile, even though cryptroot unlocks via TPM with no prompt.
+          keyFile = "/sysroot/var/lib/luks-swap.key";
         };
       };
     };

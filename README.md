@@ -161,7 +161,13 @@ sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+2+7+12 --wipe-slot=tpm
 
 Swap (`cryptswap`) is **not** enrolled in the TPM — it is unlocked with a
 keyfile living on the (already TPM-unlocked) root filesystem, declared via
-`keyFile` in `hosts/laptop/hardware-configuration.nix`. To (re)generate it:
+`keyFile` in `hosts/laptop/hardware-configuration.nix`. **That path must be
+prefixed with `/sysroot`** (e.g. `/sysroot/var/lib/luks-swap.key`) — this
+host uses systemd stage 1 (required for the TPM2 crypttab options), which
+mounts the root filesystem at `/sysroot` during initrd, not `/`. A keyFile
+path without that prefix silently falls back to an interactive passphrase
+prompt for swap on every boot, even though cryptroot itself unlocks via TPM
+with no prompt. To (re)generate the keyfile itself:
 
 ```bash
 sudo dd if=/dev/urandom of=/var/lib/luks-swap.key bs=4096 count=1
