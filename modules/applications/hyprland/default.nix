@@ -24,18 +24,19 @@
     enable = true;
     settings = {
       default_session = {
-        # `programs.hyprland.enable` only puts a `Hyprland` binary (capital H)
-        # on PATH — there is no `start-hyprland` wrapper anywhere in this
-        # repo. Pointing tuigreet at the nonexistent name would make the
-        # greeter fail to exec anything after a fresh install (caught during
-        # reinstall pre-flight review, never actually hit in production
-        # since the running laptop wasn't reinstalled since this was added).
-        command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd Hyprland";
+        # Provided by UWSM (programs.hyprland.withUWSM above) — launches
+        # Hyprland under systemd/UWSM session management rather than bare.
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd start-hyprland";
       };
     };
   };
 
   programs.hyprland.enable = true;
+  # UWSM gives Hyprland proper systemd session integration (graphical-session
+  # target, env import) and is what provides the `start-hyprland` wrapper
+  # binary that tuigreet below launches. Without this, withUWSM defaults to
+  # false and that binary is never generated — greetd would fail to exec it.
+  programs.hyprland.withUWSM = true;
 
   home-manager.users.${username} = { ... }: {
     xdg.configFile."hypr/hyprland.conf".source = ./dotfiles/hyprland.conf;
