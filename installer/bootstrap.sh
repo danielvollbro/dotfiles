@@ -155,6 +155,10 @@ if [ "$HOST" = "laptop" ]; then
   dd if=/dev/urandom of="$SWAP_KEY_DST" bs=4096 count=1
   chmod 600 "$SWAP_KEY_DST"
   CURRENT_STEP="adding the swap keyfile to the cryptswap LUKS header"
+  # cryptsetup needs to authenticate against the header before it can add a
+  # new key slot, so this prompts for the LUKS passphrase you just set for
+  # cryptswap during disko a moment ago — expected, not a hang or a bug.
+  info "cryptsetup will ask for the cryptswap LUKS passphrase you just set (to authorize adding the new keyfile slot)"
   cryptsetup luksAddKey "$SWAP_PART" "$SWAP_KEY_DST" \
     || die "could not add keyfile to $SWAP_PART — check the partition exists and the LUKS header is intact"
   info "swap keyfile enrolled"
