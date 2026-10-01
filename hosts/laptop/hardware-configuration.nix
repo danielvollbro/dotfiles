@@ -27,6 +27,10 @@
         "cryptswap" = {
           device = "/dev/disk/by-partlabel/disk-main-luksSwap";
           allowDiscards = true;
+          # Unlocked with a keyfile on the (TPM-unlocked) root filesystem,
+          # so swap opens automatically after cryptroot — no passphrase,
+          # no separate TPM enrollment. Kept 0600 root-owned.
+          keyFile = "/var/lib/luks-swap.key";
         };
       };
     };
