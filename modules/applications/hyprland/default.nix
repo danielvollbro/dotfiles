@@ -24,19 +24,12 @@
     enable = true;
     settings = {
       default_session = {
-        # Provided by UWSM (programs.hyprland.withUWSM above) — launches
-        # Hyprland under systemd/UWSM session management rather than bare.
         command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd start-hyprland";
       };
     };
   };
 
   programs.hyprland.enable = true;
-  # UWSM gives Hyprland proper systemd session integration (graphical-session
-  # target, env import) and is what provides the `start-hyprland` wrapper
-  # binary that tuigreet below launches. Without this, withUWSM defaults to
-  # false and that binary is never generated — greetd would fail to exec it.
-  programs.hyprland.withUWSM = true;
 
   home-manager.users.${username} = { ... }: {
     xdg.configFile."hypr/hyprland.conf".source = ./dotfiles/hyprland.conf;
