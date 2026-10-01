@@ -117,6 +117,15 @@
   # ("Permission denied") despite the keys inside it being correctly owned.
   # Re-chowning on every activation is idempotent and cheap, and self-heals
   # if ~/.ssh gets wiped/recreated by sops-nix again on some future rebuild.
+  #
+  # Ordering: deliberately NOT wired via systemd.services.*.after/before —
+  # "ssh-dir-ownership" is an activationScript name, not a systemd unit, so
+  # systemd.services.<x>.after requires a real unit name (*.service/.target/
+  # etc) and rejects an arbitrary string with a confusing type-mismatch
+  # error at eval time. activationScripts already run in a fixed order via
+  # their own `deps`; chowning here is idempotent regardless of exactly
+  # when sops-install-secrets runs relative to it, so no unit ordering is
+  # actually required.
   system.activationScripts.ssh-dir-ownership = {
     text = ''
       mkdir -p /home/${username}/.ssh
@@ -125,7 +134,6 @@
     '';
     deps = [ "users" ];
   };
-  systemd.services.sops-install-secrets.after = [ "ssh-dir-ownership" ];
 
   environment = { 
     systemPackages = with pkgs; [
