@@ -136,6 +136,44 @@ Hosts using `sshKeyPaths` (gaming-pc) don't need a master key; their host key ca
 - **`--age` takes public keys**, not key files — get the age pubkey of a key with `age-keygen -y <keyfile>`, and convert SSH pubkeys with `ssh-to-age`.
 - **Templates** (`sops.templates`) render secret *values* into files like the wpa_supplicant env file without ever putting plaintext in the nix store. Secrets referenced by a template are pulled in automatically via `config.sops.placeholder.<NAME>`.
 
+## Secure Boot & TPM2 disk encryption (laptop)
+
+The laptop unlocks its root LUKS container with the TPM2 chip at boot — no
+passphrase prompt — gated on Secure Boot state, bootloader, kernel and kernel
+command line (PCR 0+2+7+12). [Lanzaboote](https://github.com/nix-community/lanzaboote)
+signs the bootloader and auto-generates/enrolls Secure Boot keys
+(`boot.lanzaboote` in `hosts/laptop/configuration.nix`).
+
+### First-time enrollment
+
+After the first `nixos-rebuild switch` with Lanzaboote enabled (it reboots once
+to enroll its Secure Boot keys), enroll the disk encryption key into the TPM —
+run this from a TTY, not an SSH session, since it prompts for the LUKS passphrase:
+
+```bash
+sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+2+7+12 --wipe-slot=tpm2 \
+  /dev/disk/by-partlabel/disk-main-luksRoot
+```
+
+### Encrypted swap
+
+Swap (`cryptswap`) is **not** enrolled in the TPM — it is unlocked with a
+keyfile living on the (already TPM-unlocked) root filesystem, declared via
+`keyFile` in `hosts/laptop/hardware-configuration.nix`. To (re)generate it:
+
+```bash
+sudo dd if=/dev/urandom of=/var/lib/luks-swap.key bs=4096 count=1
+sudo chmod 600 /var/lib/luks-swap.key
+sudo cryptsetup luksAddKey /dev/disk/by-partlabel/disk-main-luksSwap /var/lib/luks-swap.key
+```
+
+### When the TPM prompt returns
+
+The key is only released while the measured boot state is unchanged. After a
+kernel/BootLoader-spec change, Secure Boot key rotation or firmware update the
+machine falls back to asking for the LUKS passphrase — just re-run the
+`systemd-cryptenroll` command above to re-bind the new state.
+
 ## Rebuilding
 
 ```bash
