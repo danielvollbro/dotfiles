@@ -28,6 +28,13 @@
                 type = "luks";
                 name = "cryptswap";
                 settings.allowDiscards = true;
+                # Read non-interactively from a file the installer writes
+                # after a retry-looped (matching) prompt — see
+                # installer/bootstrap.sh. Without this, disko asks for the
+                # passphrase TWICE per container (4x total for root+swap)
+                # with zero tolerance for a typo: one mismatch aborts the
+                # whole install with everything already wiped.
+                passwordFile = "/tmp/disko-luks.key";
                 content = {
                   type = "swap";
                   discardPolicy = "both";
@@ -44,6 +51,7 @@
                 type = "luks";
                 name = "cryptroot";
                 settings.allowDiscards = true;
+                passwordFile = "/tmp/disko-luks.key";
                 content = {
                   type = "btrfs";
                   extraArgs = [ "-f" ];
