@@ -139,6 +139,27 @@ CURRENT_STEP="disko partitioning/formatting/encrypting the disk (check: did you 
 nix --experimental-features "nix-command flakes" run \
   github:nix-community/disko/latest -- --mode destroy,format,mount --yes-wipe-all-disks "$DISKO_FILE"
 
+# --- 3.5 swap keyfile (laptop) ----------------------------------------------
+# The laptop's encrypted swap (cryptswap) is NOT enrolled in the TPM — it is
+# unlocked with a keyfile on the (already TPM-unlocked) root filesystem,
+# declared as boot.initrd.luks.devices.cryptswap.keyFile in
+# hosts/laptop/hardware-configuration.nix. Generate that keyfile and add it
+# to the swap container's LUKS header right after disko, so the fresh
+# install boots with working, automatically-unlocked swap.
+if [ "$HOST" = "laptop" ]; then
+  SWAP_KEY_DST="/mnt/var/lib/luks-swap.key"
+  SWAP_PART="/dev/disk/by-partlabel/disk-main-luksSwap"
+  CURRENT_STEP="generating the swap unlock keyfile"
+  info "generating swap keyfile at $SWAP_KEY_DST"
+  mkdir -p "$(dirname "$SWAP_KEY_DST")"
+  dd if=/dev/urandom of="$SWAP_KEY_DST" bs=4096 count=1
+  chmod 600 "$SWAP_KEY_DST"
+  CURRENT_STEP="adding the swap keyfile to the cryptswap LUKS header"
+  cryptsetup luksAddKey "$SWAP_PART" "$SWAP_KEY_DST" \
+    || die "could not add keyfile to $SWAP_PART — check the partition exists and the LUKS header is intact"
+  info "swap keyfile enrolled"
+fi
+
 # --- 4. place master key -----------------------------------------------------
 CURRENT_STEP="placing the master key onto the new install"
 if [ "$NEEDS_MASTER_KEY" -eq 1 ]; then
@@ -162,3 +183,20 @@ nixos-install --flake ".#$HOST"
 info "install finished. Rebooting in 10s (Ctrl-C to cancel and stay in the installer)..."
 sleep 10
 systemctl reboot
+
+# ===========================================================================
+# POST-INSTALL (manual, one time): TPM2 enrollment of the root LUKS container
+# ===========================================================================
+# This CANNOT be automated here: systemd-cryptenroll seals the key against
+# the PCR values of the *running* system. From the installer ISO those PCRs
+# measure the installer kernel/Secure Boot state — not the freshly installed
+# system — so a key sealed here would never be released at real boot. It also
+# prompts interactively for the LUKS passphrase.
+#
+# After the first real boot (Lanzaboote has then enrolled its Secure Boot
+# keys), run from a TTY on the laptop:
+#
+#   sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+2+7+12 \
+#     --wipe-slot=tpm2 /dev/disk/by-partlabel/disk-main-luksRoot
+#
+# See README.md, section "Secure Boot & TPM2 disk encryption (laptop)".
