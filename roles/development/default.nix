@@ -5,9 +5,10 @@
     ../../modules/applications/nvim/default.nix
   ];
 
-  environment.systemPackages = with pkgs; [
-    docker
-  ];
+  # Enabled docker
+  virtualisation.docker.enable = true;
+  users.users.${username}.extraGroups = [ "docker" ];
+  virtualisation.docker.storageDriver = "btrfs";
 
   home-manager.users.${username} = { pkgs, ... }: {
     home.packages = with pkgs; [
