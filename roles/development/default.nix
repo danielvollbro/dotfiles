@@ -14,6 +14,7 @@
       # Development
       go
       gopls
+      tmux
 
       # Language servers / dev tools
       gotools
