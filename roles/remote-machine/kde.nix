@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ../../modules/applications/kde-plasma/default.nix
+    ../../modules/desktop-environment/kde-plasma/with-autologin.nix
     ../../modules/applications/krfb/default.nix
     ../../modules/applications/sunshine/default.nix
     ../../roles/enable/wol/default.nix

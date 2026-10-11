@@ -3,9 +3,9 @@
 {
   imports = [
     ../../roles/base/default.nix
-    ../../roles/hyprland/default.nix
     ../../roles/development/default.nix
     ../../roles/hermes-agent-ssh-access/default.nix
+    ../../modules/desktop-environment/kde-plasma/default.nix
     ../../modules/custom/laptop-screen-watchdog/default.nix
     ./hardware-configuration.nix
   ];
@@ -24,14 +24,6 @@
 
   # Audio
   security.rtkit.enable = true;
-
-  # Warm dark GTK theme
-  programs.dconf.enable = true;
-  qt = {
-    enable = true;
-    platformTheme = "qt5ct";
-    style = "kvantum";
-  };
 
   systemd.services.dhcpcd.serviceConfig = {
     StandardOutput = "journal";
@@ -148,6 +140,8 @@
       xclip
       kanshi
       grim
+
+      libxcb-cursor
     ];
 
     sessionVariables = {
