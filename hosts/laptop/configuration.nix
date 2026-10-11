@@ -6,7 +6,6 @@
     ../../roles/development/default.nix
     ../../roles/hermes-agent-ssh-access/default.nix
     ../../modules/desktop-environment/kde-plasma/default.nix
-    ../../modules/custom/laptop-screen-watchdog/default.nix
     ./hardware-configuration.nix
   ];
 
@@ -14,7 +13,6 @@
     home.packages = with pkgs; [
       sops
       unzip
-
       sbctl
     ];
   };
@@ -140,8 +138,6 @@
       xclip
       kanshi
       grim
-
-      libxcb-cursor
     ];
 
     sessionVariables = {
