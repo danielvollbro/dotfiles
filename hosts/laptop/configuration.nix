@@ -2,9 +2,9 @@
 
 {
   imports = [
-    ../../roles/base/default.nix
-    ../../roles/development/default.nix
-    ../../roles/hermes-agent-ssh-access/default.nix
+    ../../roles/base/main.nix
+    ../../roles/development/main.nix
+    ../../roles/hermes-agent-ssh-access/main.nix
     ../../modules/desktop-environment/kde-plasma/main.nix
     ./hardware-configuration.nix
   ];

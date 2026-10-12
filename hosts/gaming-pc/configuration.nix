@@ -2,15 +2,15 @@
 
 {
   imports = [
-    ../../roles/base/default.nix
-    ../../roles/gaming/default.nix
-    ../../roles/hermes-agent-ssh-access/default.nix
-    ../../roles/private-ssh-access/default.nix
-    ../../modules/applications/sunshine/default.nix
+    ../../roles/base/main.nix
+    ../../roles/gaming/main.nix
+    ../../roles/hermes-agent-ssh-access/main.nix
+    ../../roles/private-ssh-access/main.nix
+    ../../modules/applications/sunshine/main.nix
     ../../modules/desktop-environment/kde-plasma/main.nix
-    ../../modules/hardware/gpu/rtx3070/default.nix
-    ../../modules/network/WOL/default.nix
-    ../../modules/applications/krfb/default.nix
+    ../../modules/hardware/gpu/rtx3070.nix
+    ../../modules/network/WOL/main.nix
+    ../../modules/applications/krfb/main.nix
     ./hardware-configuration.nix
   ];
 
