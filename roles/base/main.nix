@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ../../modules/applications/nvim/default.nix
+    ../../modules/applications/nvim/main.nix
   ];
 
   # Shell Aliases
