@@ -1,0 +1,30 @@
+name: Notify Discord on new PR
+
+on:
+  pull_request:
+    types: [opened, ready_for_review]
+    branches: [main]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send to Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          TITLE: ${{ github.event.pull_request.title }}
+          URL: ${{ github.event.pull_request.html_url }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+          # User: <@USER_ID>  |  Role: <@&ROLE_ID>
+          MENTION: "<@1544992470985875519>"
+        run: |
+          jq -n \
+            --arg mention "$MENTION" \
+            --arg title "$TITLE" \
+            --arg url "$URL" \
+            --arg author "$AUTHOR" \
+            '{
+              content: "\($mention) New PR: **\($title)** by \($author)\n\($url)",
+              allowed_mentions: {parse: ["users", "roles"]}
+            }' \
+          | curl -sS -H "Content-Type: application/json" -d @- "$WEBHOOK"
