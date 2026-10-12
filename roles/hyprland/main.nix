@@ -2,10 +2,10 @@
 
 {
   imports = [
-    ../../modules/applications/hyprland/main.nix
-    ../../modules/applications/rofi/main.nix
-    ../../modules/applications/mako/main.nix
-    ../../modules/applications/kanshi/main.nix
-    ../../modules/applications/waybar/main.nix
+    ../../modules/softwares/applications/hyprland/main.nix
+    ../../modules/softwares/applications/rofi/main.nix
+    ../../modules/softwares/applications/mako/main.nix
+    ../../modules/softwares/applications/kanshi/main.nix
+    ../../modules/softwares/applications/waybar/main.nix
   ];
 }

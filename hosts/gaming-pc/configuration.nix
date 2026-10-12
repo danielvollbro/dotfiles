@@ -6,11 +6,11 @@
     ../../roles/gaming/main.nix
     ../../roles/hermes-agent-ssh-access/main.nix
     ../../roles/private-ssh-access/main.nix
-    ../../modules/applications/sunshine/main.nix
-    ../../modules/desktop-environment/kde-plasma/main.nix
     ../../modules/hardware/gpu/rtx3070.nix
-    ../../modules/network/WOL/main.nix
-    ../../modules/applications/krfb/main.nix
+    ../../modules/softwares/applications/sunshine/main.nix
+    ../../modules/softwares/desktop-environment/kde-plasma/main.nix
+    ../../modules/softwares/network/WOL/main.nix
+    ../../modules/softwares/applications/krfb/main.nix
     ./hardware-configuration.nix
   ];
 
