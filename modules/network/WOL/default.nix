@@ -1,9 +1,9 @@
-{ ... }:
+{ nic, ... }:
 
 {
   networking = {
     interfaces = {
-      enp5s0 = {
+      ${nic} = {
         wakeOnLan.enable = true;
       };
     };
