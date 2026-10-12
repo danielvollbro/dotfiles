@@ -6,10 +6,18 @@
     ../../roles/gaming/default.nix
     ../../roles/hermes-agent-ssh-access/default.nix
     ../../roles/private-ssh-access/default.nix
-    ../../roles/remote-machine/kde.nix
+    ../../modules/applications/sunshine/default.nix
+    ../../modules/desktop-environment/kde-plasma/main.nix
     ../../modules/hardware/gpu/rtx3070/default.nix
+    ../../modules/network/WOL/default.nix
+    ../../modules/applications/krfb/default.nix
     ./hardware-configuration.nix
   ];
+
+  services.kde = {
+    autoLogin = true;
+    disable_direct_scan-out = true;
+  };
 
   networking.hostName = "gaming-pc";
 

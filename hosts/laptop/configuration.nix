@@ -5,7 +5,7 @@
     ../../roles/base/default.nix
     ../../roles/development/default.nix
     ../../roles/hermes-agent-ssh-access/default.nix
-    ../../modules/desktop-environment/kde-plasma/default.nix
+    ../../modules/desktop-environment/kde-plasma/main.nix
     ./hardware-configuration.nix
   ];
 

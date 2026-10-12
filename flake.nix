@@ -69,7 +69,11 @@
     };
     nixosConfigurations.gaming-pc = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      specialArgs = { inherit inputs; inherit username; };
+      specialArgs = {
+        inherit inputs;
+        inherit username;
+        nic = "enp5s0";
+      };
       modules = [
         ./hosts/gaming-pc/configuration.nix
         home-manager.nixosModules.home-manager
