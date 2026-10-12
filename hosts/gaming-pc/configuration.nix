@@ -3,9 +3,9 @@
 {
   imports = [
     ../../roles/base/main.nix
-    ../../roles/gaming/main.nix
     ../../roles/hermes-agent-ssh-access/main.nix
     ../../roles/private-ssh-access/main.nix
+    ../../modules/gaming/main.nix
     ../../modules/hardware/gpu/rtx3070.nix
     ../../modules/softwares/applications/sunshine/main.nix
     ../../modules/softwares/desktop-environment/kde-plasma/main.nix
@@ -17,6 +17,12 @@
   services.kde = {
     autoLogin = true;
     disable_direct_scan-out = true;
+  };
+
+  # Enable gaming software
+  gaming = {
+    enableSteam = true;
+    enableLutris = true;
   };
 
   networking.hostName = "gaming-pc";
