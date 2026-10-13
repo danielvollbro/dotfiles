@@ -12,8 +12,8 @@ in {
     };
   };
 
-  config = {
-    environment = mkIf cfg.enableLutris {
+  config = mkIf cfg.enableLutris {
+    environment = {
       systemPackages = with pkgs; [
         lutris
 

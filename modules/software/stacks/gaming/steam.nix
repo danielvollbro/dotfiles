@@ -12,8 +12,8 @@ in {
     };
   };
 
-  config = {
-    programs = mkIf cfg.enableSteam {
+  config = mkIf cfg.enableSteam {
+    programs = {
       steam = {
         enable = true;
       };
