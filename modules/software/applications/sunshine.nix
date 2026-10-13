@@ -26,10 +26,10 @@ in {
     home-manager.users.${config.host.username} = { ... }: {
       xdg.configFile = {
         "sunshine/apps.json" = {
-          source = ../../../../home/dotfiles/sunshine/apps.json;
+          source = ../../../home/dotfiles/sunshine/apps.json;
         };
         "sunshine/sunshine.conf" = {
-          source = ../../../../home/dotfiles/sunshine/sunshine.conf;
+          source = ../../../home/dotfiles/sunshine/sunshine.conf;
         };
       };
     };
