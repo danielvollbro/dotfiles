@@ -16,7 +16,13 @@
   };
 
   home-manager.users.${username} = { ... }: {
-    xdg.configFile."sunshine/apps.json".source = ./dotfiles/apps.json;
-    xdg.configFile."sunshine/sunshine.conf".source = ./dotfiles/sunshine.conf;
+    xdg.configFile = {
+      "sunshine/apps.json" = {
+        source = ../../../../home/dotfiles/sunshine/apps.json;
+      };
+      "sunshine/sunshine.conf" = {
+        source = ../../../../home/dotfiles/sunshine/sunshine.conf;
+      };
+    };
   };
 }
