@@ -72,7 +72,6 @@
       specialArgs = {
         inherit inputs;
         inherit username;
-        nic = "enp5s0";
       };
       modules = [
         ./hosts/gaming-pc/configuration.nix
