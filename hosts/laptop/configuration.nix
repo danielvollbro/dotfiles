@@ -11,8 +11,22 @@
       sops
       unzip
       sbctl
+      fd
+      btop
+      papirus-icon-theme
+
+      # AI
+      claude-code
+
+      # Software
+      moonlight-qt
+      discord
     ];
+
+    # Wallpaper (used by swww + hyprlock)
+    xdg.configFile."wallpapers/japan-night.jpg".source = ../../home/wallpapers/japan-night.jpg;
   };
+
 
   desktops.kde.enable = true;
 
