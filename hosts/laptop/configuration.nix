@@ -4,8 +4,8 @@
   imports = [
     ../../modules/base.nix
     ../../modules/softwares/desktop-environment/kde-plasma/main.nix
+    ../../modules/softwares/network/hermes-agent-ssh-access/main.nix
     ../../modules/softwares/stacks/development/main.nix
-    ../../roles/hermes-agent-ssh-access/main.nix
     ./hardware-configuration.nix
   ];
 
