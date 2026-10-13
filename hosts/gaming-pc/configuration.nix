@@ -31,7 +31,7 @@
       nic = "enp5s0";
     };
     allowSSHKeysAccess = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGC5gYdLzF4jUwLYega58MkYMTPVatL0oZGvCWgJB/Ip hermes-agent",
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGC5gYdLzF4jUwLYega58MkYMTPVatL0oZGvCWgJB/Ip hermes-agent"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJjzcieQ64SuEq6swAfKlt540QKNJs6wNIcmOEEs0Uya daniel@nixos"
     ];
     allowIPAccess = ''
@@ -45,7 +45,7 @@
   # Enable networking
   networking.networkmanager.enable = true;
 
-  home-manager.users.${config.host.username} = { ... }: {
+  home-manager.users.${config.host.username} = { pkgs, ... }: {
     home.packages = with pkgs; [ sops ];
   };
 
