@@ -1,7 +1,7 @@
 { lib, config, username, ... }:
 with lib;
 let
-  cfg = config.development;
+  cfg = config.development.php;
 in {
   options.development.php.enable = mkOption {
     type = types.bool;
@@ -9,10 +9,8 @@ in {
   };
 
   config = mkIf cfg.enable {
-    home-manager = mkIf cfg.php.enable {
-      users.${username} = { pkgs, ... }: {
-        home.packages = [ pkgs.intelephense ];
-      };
+    home-manager.users.${username} = { pkgs, ... }: {
+      home.packages = [ pkgs.intelephense ];
     };
   };
 }

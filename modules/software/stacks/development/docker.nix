@@ -1,7 +1,7 @@
 { lib, config, username, ... }:
 with lib;
 let
-  cfg = config.development;
+  cfg = config.development.docker;
 in {
   options.development.docker.enable = mkOption {
     type = types.bool;
@@ -9,17 +9,15 @@ in {
   };
 
   config = mkIf cfg.enable {
-    virtualisation = mkIf cfg.docker.enable {
+    virtualisation = {
       docker.enable = true;
     };
 
-    home-manager = mkIf cfg.docker.enable {
-      users.${username} = { pkgs, ... }: {
-        home.packages = with pkgs; [
-          dockerfile-language-server
-          docker-compose-language-service
-        ];
-      };
+    home-manager.users.${username} = { pkgs, ... }: {
+      home.packages = with pkgs; [
+        dockerfile-language-server
+        docker-compose-language-service
+      ];
     };
   };
 }

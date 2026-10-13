@@ -1,7 +1,7 @@
 { lib, config, username, ... }:
 with lib;
 let
-  cfg = config.development;
+  cfg = config.development.go;
 in {
   options.development.go.enable = mkOption {
     type = types.bool;
@@ -9,17 +9,15 @@ in {
   };
 
   config = mkIf cfg.enable {
-    home-manager = mkIf cfg.go.enable {
-      users.${username} = { pkgs, ... }: {
-        home.packages = with pkgs; [
-          go
-          gopls
-          gotools
-        ];
+    home-manager.users.${username} = { pkgs, ... }: {
+      home.packages = with pkgs; [
+        go
+        gopls
+        gotools
+      ];
 
-        xdg.configFile = {
-          "nvim/after/ftplugin/go.lua".source = ../../../../home/dotfiles/nvim/after/ftplugin/go.lua;
-        };
+      xdg.configFile = {
+        "nvim/after/ftplugin/go.lua".source = ../../../../home/dotfiles/nvim/after/ftplugin/go.lua;
       };
     };
   };

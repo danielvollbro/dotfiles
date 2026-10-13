@@ -1,7 +1,7 @@
 { lib, config, username, ... }:
 with lib;
 let
-  cfg = config.development;
+  cfg = config.development.lua;
 in {
   options.development.lua.enable = mkOption {
     type = types.bool;
@@ -9,13 +9,11 @@ in {
   };
   
   config = mkIf cfg.enable {
-    home-manager = mkIf cfg.lua.enable {
-      users.${username} = { pkgs, ... }: {
-        home.packages = with pkgs; [
-          stylua
-          lua-language-server
-        ];
-      };
+    home-manager.users.${username} = { pkgs, ... }: {
+      home.packages = with pkgs; [
+        stylua
+        lua-language-server
+      ];
     };
   };
 }
