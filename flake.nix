@@ -50,7 +50,6 @@
     apps.x86_64-linux.laptop-install = bootstrapApp nixpkgs.legacyPackages.x86_64-linux "laptop";
     apps.x86_64-linux.gaming-pc-install = bootstrapApp nixpkgs.legacyPackages.x86_64-linux "gaming-pc";
 
-
     nixosConfigurations.laptop = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit inputs; inherit username; };
@@ -61,7 +60,6 @@
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users.${username} = import ./home/laptop.nix;
         }
         sops-nix.nixosModules.sops
         lanzaboote.nixosModules.lanzaboote
@@ -79,7 +77,6 @@
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users.${username} = import ./home/gaming-pc.nix;
         }
         sops-nix.nixosModules.sops
       ];
