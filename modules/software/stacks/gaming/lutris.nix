@@ -1,14 +1,10 @@
-{ pkgs, lib, ... }:
+{ pkgs, lib, config, ... }:
 with lib;
 let
   cfg = config.gaming;
 in {
   options = {
     gaming = {
-      enableSteam = mkOption {
-        type = types.bool;
-        default = false;
-      };
       enableLutris = mkOption {
         type = types.bool;
         default = false;
@@ -17,12 +13,6 @@ in {
   };
 
   config = {
-    programs = mkIf cfg.enableSteam {
-      steam = {
-        enable = true;
-      };
-    };
-
     environment = mkIf cfg.enableLutris {
       systemPackages = with pkgs; [
         lutris

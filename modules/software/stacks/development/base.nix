@@ -1,24 +1,20 @@
-{ pkgs, lib, config, username, ... }:
+{ lib, config, username, ... }:
 with lib;
 let
   cfg = config.development;
 in {
-  imports = [
-    ../applications/nvim.nix
-    ../applications/tmux.nix
-    ./development/docker.nix
-    ./development/go.nix
-    ./development/lua.nix
-    ./development/php.nix
-    ./development/terraform.nix
-  ];
-
   options.development.enable = mkOption {
     type = types.bool;
     default = false;
   };
 
   config = mkIf cfg.enable {
+    # Make sure nvim and tmux is enabled
+    applications = {
+      nvim.enable = true;
+      tmux.enable = true;
+    };
+
     home-manager.users.${username} = { pkgs, ... }: {
       home.packages = with pkgs; [
         # Language servers / dev tools
