@@ -2,9 +2,9 @@
 
 {
   imports = [
-    ../../roles/base/main.nix
     ../../roles/hermes-agent-ssh-access/main.nix
     ../../roles/private-ssh-access/main.nix
+    ../../modules/base.nix
     ../../modules/gaming/main.nix
     ../../modules/hardware/gpu/rtx3070.nix
     ../../modules/softwares/applications/sunshine/main.nix
