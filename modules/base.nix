@@ -5,6 +5,7 @@
     ./softwares/applications/nvim.nix
     ./softwares/network/ssh-access.nix
     ./softwares/network/wakeOnLan.nix
+    ./softwares/stacks/development.nix
   ];
 
   # Shell Aliases
