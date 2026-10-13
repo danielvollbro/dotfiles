@@ -4,8 +4,7 @@
   imports = [
     ./software/applications/nvim.nix
     ./software/desktops/_init.nix
-    ./software/network/ssh-access.nix
-    ./software/network/wakeOnLan.nix
+    ./software/network/_init.nix
     ./software/stacks/development.nix
   ];
 
