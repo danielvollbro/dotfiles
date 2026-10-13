@@ -1,4 +1,4 @@
-{ lib, config, username, ... }:
+{ lib, config, ... }:
 with lib;
 let
   cfg = config.development.terraform;
@@ -9,7 +9,7 @@ in {
   };
 
   config = mkIf cfg.enable {
-    home-manager.users.${username} = { pkgs, ... }: {
+    home-manager.users.${config.host.username} = { pkgs, ... }: {
       home.packages = [ pkgs.terraform-ls ];
     };
   };

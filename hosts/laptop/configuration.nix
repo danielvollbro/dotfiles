@@ -1,4 +1,4 @@
-{ pkgs, lib, config, username, ... }:
+{ pkgs, lib, config, ... }:
 
 {
   imports = [
@@ -6,7 +6,7 @@
     ./hardware-configuration.nix
   ];
 
-  home-manager.users.${username} = { ... }: {
+  home-manager.users.${config.host.username} = { ... }: {
     home.packages = with pkgs; [
       sops
       unzip
@@ -97,14 +97,14 @@
         neededForUsers = true;
       };
       SSH_USER_ED25519_KEY = {
-        path = "/home/${username}/.ssh/id_ed25519";
-        owner = "${username}";
+        path = "/home/${config.host.username}/.ssh/id_ed25519";
+        owner = "${config.host.username}";
         group = "users";
         mode = "0600";
       };
       SSH_USER_ED25519_PUB_KEY = {
-        path = "/home/${username}/.ssh/id_ed25519.pub";
-        owner = "${username}";
+        path = "/home/${config.host.username}/.ssh/id_ed25519.pub";
+        owner = "${config.host.username}";
         group = "users";
         mode = "0644";
       };
@@ -140,9 +140,9 @@
   # actually required.
   system.activationScripts.ssh-dir-ownership = {
     text = ''
-      mkdir -p /home/${username}/.ssh
-      chown ${username}:users /home/${username}/.ssh
-      chmod 700 /home/${username}/.ssh
+      mkdir -p /home/${config.host.username}/.ssh
+      chown ${config.host.username}:users /home/${config.host.username}/.ssh
+      chmod 700 /home/${config.host.username}/.ssh
     '';
     deps = [ "users" ];
   };

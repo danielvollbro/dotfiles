@@ -32,7 +32,6 @@
     ...
   }@inputs:
   let
-    username = "daniel";
     # Bootstrap apps: one-command reinstall from a NixOS installer ISO, e.g.
     #   sudo nix --experimental-features "nix-command flakes" run github:danielvollbro/dotfiles#laptop-install
     # (clones the repo, wipes/partitions the disk via disko, places the master
@@ -52,7 +51,7 @@
 
     nixosConfigurations.laptop = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      specialArgs = { inherit inputs; inherit username; };
+      specialArgs = { inherit inputs; };
       modules = [
         nixos-hardware.nixosModules.dell-xps-13-9370
         ./hosts/laptop/configuration.nix
@@ -67,10 +66,7 @@
     };
     nixosConfigurations.gaming-pc = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      specialArgs = {
-        inherit inputs;
-        inherit username;
-      };
+      specialArgs = { inherit inputs; };
       modules = [
         ./hosts/gaming-pc/configuration.nix
         home-manager.nixosModules.home-manager

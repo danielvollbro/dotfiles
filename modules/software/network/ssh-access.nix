@@ -1,4 +1,4 @@
-{ lib, config, username, ... }:
+{ lib, config, ... }:
 with lib;
 let
   cfg = config.network;
@@ -16,7 +16,7 @@ in {
   };
 
   config = {
-    users.users.${username}.openssh.authorizedKeys = {
+    users.users.${config.host.username}.openssh.authorizedKeys = {
       keys = mkDefault cfg.allowSSHKeysAccess;
     };
     networking.firewall.extraCommands = cfg.allowIPAccess;

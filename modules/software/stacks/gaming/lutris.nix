@@ -1,4 +1,4 @@
-{ lib, config, username, ... }:
+{ lib, config, ... }:
 with lib;
 let
   cfg = config.gaming;
@@ -13,7 +13,7 @@ in {
   };
 
   config = mkIf cfg.enableLutris {
-    home-manager.users.${username} = { pkgs, ... }: {
+    home-manager.users.${config.host.username} = { pkgs, ... }: {
       home.packages = [ pkgs.lutris ];
     };
   };

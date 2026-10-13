@@ -1,4 +1,4 @@
-{ lib, config, username, ... }:
+{ lib, config, ... }:
 with lib;
 let
   cfg = config.applications;
@@ -9,7 +9,7 @@ in {
   };
 
   config = mkIf cfg.nvim.enable {
-    home-manager.users.${username} = { pkgs, ... }: {
+    home-manager.users.${config.host.username} = { pkgs, ... }: {
       home.packages = with pkgs; [
         # Main bin
         neovim

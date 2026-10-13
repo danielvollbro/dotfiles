@@ -1,4 +1,4 @@
-{ pkgs, lib, config, username, ... }:
+{ pkgs, lib, config, ... }:
 with lib;
 let
   cfg = config.desktops;
@@ -43,7 +43,7 @@ in {
 
     programs.hyprland.enable = true;
 
-    home-manager.users.${username} = { ... }: {
+    home-manager.users.${config.host.username} = { ... }: {
       # Waybar
       xdg.configFile."waybar/config".source = ../../home/dotfiles/waybar/config;
       xdg.configFile."waybar/style.css".source = ../../home/dotfiles/waybar/style.css;
