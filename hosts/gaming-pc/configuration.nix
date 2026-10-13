@@ -8,9 +8,9 @@
     ../../modules/softwares/applications/sunshine/main.nix
     ../../modules/softwares/desktop-environment/kde-plasma/main.nix
     ../../modules/softwares/network/WOL/main.nix
+    ../../modules/softwares/network/hermes-agent-ssh-access/main.nix
+    ../../modules/softwares/network/private-ssh-access/main.nix
     ../../modules/softwares/stacks/gaming/main.nix
-    ../../roles/hermes-agent-ssh-access/main.nix
-    ../../roles/private-ssh-access/main.nix
     ./hardware-configuration.nix
   ];
 
