@@ -6,12 +6,12 @@
     ../../modules/hardware/gpu/rtx3070.nix
     ../../modules/software/applications/krfb.nix
     ../../modules/software/applications/sunshine.nix
-    ../../modules/software/desktop-environment/kde-plasma.nix
     ../../modules/software/stacks/gaming.nix
     ./hardware-configuration.nix
   ];
 
-  services.kde = {
+  desktops.kde = {
+    enable = true;
     autoLogin = true;
     disableDirectScanOut = true;
   };

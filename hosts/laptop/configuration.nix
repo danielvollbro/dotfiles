@@ -3,7 +3,6 @@
 {
   imports = [
     ../../modules/base.nix
-    ../../modules/software/desktop-environment/kde-plasma.nix
     ./hardware-configuration.nix
   ];
 
@@ -14,6 +13,8 @@
       sbctl
     ];
   };
+
+  desktops.kde.enable = true;
 
   development = {
     enable = true;

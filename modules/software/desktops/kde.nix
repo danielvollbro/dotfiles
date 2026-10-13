@@ -1,9 +1,13 @@
 { lib, config, username, ... }:
 with lib;
 let
-  cfg = config.services.kde;
+  cfg = config.desktops.kde;
 in {
-  options.services.kde = {
+  options.desktops.kde = {
+    enable = mkOption {
+      type = types.bool;
+      default = false;
+    };
     autoLogin = mkOption {
       type = types.bool;
       default = false;
@@ -18,7 +22,7 @@ in {
     };
   };
 
-  config = {
+  config = mkIf cfg.enable {
     services = {
       logind.settings.Login = mkIf cfg.preventIdle {
         IdleAction = "ignore";
