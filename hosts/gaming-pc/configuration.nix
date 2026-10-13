@@ -4,7 +4,6 @@
   imports = [
     ../../modules/base.nix
     ../../modules/hardware/gpu/rtx3070.nix
-    ../../modules/software/stacks/gaming.nix
     ./hardware-configuration.nix
   ];
 
