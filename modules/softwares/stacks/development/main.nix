@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ../../modules/softwares/applications/nvim/main.nix
+    ../../applications/nvim/main.nix
   ];
 
   environment.systemPackages = with pkgs; [

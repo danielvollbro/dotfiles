@@ -4,7 +4,6 @@
   imports = [
     ../../modules/base.nix
     ../../modules/softwares/desktop-environment/kde-plasma/main.nix
-    ../../modules/softwares/network/hermes-agent-ssh-access/main.nix
     ../../modules/softwares/stacks/development/main.nix
     ./hardware-configuration.nix
   ];
@@ -143,6 +142,15 @@
     sessionVariables = {
       LIBVA_DRIVER_NAME = "iHD";
     };
+  };
+
+  network ={
+    allowSSHKeysAccess = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGC5gYdLzF4jUwLYega58MkYMTPVatL0oZGvCWgJB/Ip hermes-agent"
+    ];
+    allowIPAccess = ''
+      iptables -A nixos-fw -p tcp --dport 22 -s 10.0.50.20 -j ACCEPT
+    '';
   };
 
   networking = {
