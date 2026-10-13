@@ -8,8 +8,6 @@
     ../../modules/softwares/applications/sunshine/main.nix
     ../../modules/softwares/desktop-environment/kde-plasma/main.nix
     ../../modules/softwares/network/WOL/main.nix
-    ../../modules/softwares/network/hermes-agent-ssh-access/main.nix
-    ../../modules/softwares/network/private-ssh-access/main.nix
     ../../modules/softwares/stacks/gaming/main.nix
     ./hardware-configuration.nix
   ];
@@ -23,6 +21,17 @@
   gaming = {
     enableSteam = true;
     enableLutris = true;
+  };
+
+  network = {
+    allowSSHKeysAccess = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGC5gYdLzF4jUwLYega58MkYMTPVatL0oZGvCWgJB/Ip hermes-agent",
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJjzcieQ64SuEq6swAfKlt540QKNJs6wNIcmOEEs0Uya daniel@nixos"
+    ];
+    allowIPAccess = ''
+      iptables -A nixos-fw -p tcp --dport 22 -s 10.0.50.20 -j ACCEPT
+      iptables -A nixos-fw -p tcp --dport 22 -s 10.0.10.16 -j ACCEPT
+    '';
   };
 
   networking.hostName = "gaming-pc";

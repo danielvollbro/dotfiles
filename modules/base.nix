@@ -3,6 +3,7 @@
 {
   imports = [
     ./softwares/applications/nvim/main.nix
+    ./softwares/network/ssh-access/main.nix
   ];
 
   # Shell Aliases
