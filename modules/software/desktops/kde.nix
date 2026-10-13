@@ -50,12 +50,12 @@ in {
 
     home-manager.users.${username}.xdg.configFile = mkIf cfg.preventIdle {
       "powerdevilrc".text = ''
-        [AC][DPMSControl]
-        idleTime=0
-        [AC][DimDisplay]
-        dimWhenIdle=false
-        [AC][SuspendSession]
-        idleTime=3600
+[AC][DPMSControl]
+idleTime=0
+[AC][DimDisplay]
+dimWhenIdle=false
+[AC][SuspendSession]
+idleTime=3600
       '';
     };
   };
