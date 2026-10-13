@@ -1,4 +1,4 @@
-{ ... }:
+{ config, ... }:
 
 {
   imports = [
@@ -45,7 +45,7 @@
   # Enable networking
   networking.networkmanager.enable = true;
 
-  home-manager.users.${username} = { ... }: {
+  home-manager.users.${config.host.username} = { ... }: {
     home.packages = with pkgs; [ sops ];
   };
 
@@ -56,7 +56,7 @@
 
     age.sshKeyPaths = [
       "/etc/ssh/ssh_host_ed25519_key"
-      "/home/${username}/.ssh/id_ed25519"
+      "/home/${config.host.username}/.ssh/id_ed25519"
     ];
 
     secrets = {

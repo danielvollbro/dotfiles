@@ -1,4 +1,4 @@
-{ lib, config, username, ... }:
+{ lib, config, ... }:
 with lib;
 let
   cfg = config.development;
@@ -15,7 +15,7 @@ in {
       tmux.enable = true;
     };
 
-    home-manager.users.${username} = { pkgs, ... }: {
+    home-manager.users.${config.host.username} = { pkgs, ... }: {
       home.packages = with pkgs; [
         # Language servers / dev tools
         bash-language-server

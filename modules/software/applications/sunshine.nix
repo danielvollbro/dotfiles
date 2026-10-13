@@ -1,4 +1,4 @@
-{ lib, config, pkgs, username, ... }:
+{ lib, config, pkgs, ... }:
 with lib;
 let
   cfg = config.applications;
@@ -19,11 +19,11 @@ in {
 
     hardware.uinput.enable = true;
 
-    users.users.${username} = {
+    users.users.${config.host.username} = {
       extraGroups = [ "uinput" ];
     };
 
-    home-manager.users.${username} = { ... }: {
+    home-manager.users.${config.host.username} = { ... }: {
       xdg.configFile = {
         "sunshine/apps.json" = {
           source = ../../../../home/dotfiles/sunshine/apps.json;

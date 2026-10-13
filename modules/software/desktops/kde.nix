@@ -1,4 +1,4 @@
-{ lib, config, username, ... }:
+{ lib, config, ... }:
 with lib;
 let
   cfg = config.desktops.kde;
@@ -39,7 +39,7 @@ in {
         # Enable auto login
         autoLogin = mkIf cfg.autoLogin {
           enable = true;
-          user = "${username}";
+          user = "${config.host.username}";
         };
       };
     };
@@ -48,7 +48,7 @@ in {
       KWIN_DRM_NO_DIRECT_SCANOUT = "1";
     };
 
-    home-manager.users.${username}.xdg.configFile = mkIf cfg.preventIdle {
+    home-manager.users.${config.host.username}.xdg.configFile = mkIf cfg.preventIdle {
       "powerdevilrc".text = ''
 [AC][DPMSControl]
 idleTime=0

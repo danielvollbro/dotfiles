@@ -1,4 +1,4 @@
-{ lib, config, inputs, username, ... }:
+{ lib, config, inputs, ... }:
 with lib;
 let
   cfg = config.applications;
@@ -13,7 +13,7 @@ in {
   config = mkIf cfg.moonshine.enable {
     services.moonshine = {
       enable = true;
-      user = "${username}";
+      user = "${config.host.username}";
       uid = 1000;
       openFirewall = true;
 
