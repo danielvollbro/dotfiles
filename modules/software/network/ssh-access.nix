@@ -16,7 +16,9 @@ in {
   };
 
   config = {
-    users.users.${username}.openssh.authorizedKeys.keys = cfg.allowSSHKeysAccess;
+    users.users.${username}.openssh.authorizedKeys = {
+      keys = mkDefault cfg.allowSSHKeysAccess;
+    };
     networking.firewall.extraCommands = cfg.allowIPAccess;
   };
 }
