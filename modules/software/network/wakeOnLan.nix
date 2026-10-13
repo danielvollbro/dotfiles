@@ -9,7 +9,7 @@ in {
       default = false;
     };
     nic = mkOption {
-      type = types.string;
+      type = types.str;
       default = "";
     };
   };
