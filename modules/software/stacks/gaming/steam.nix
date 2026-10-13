@@ -13,10 +13,6 @@ in {
   };
 
   config = mkIf cfg.enableSteam {
-    programs = {
-      steam = {
-        enable = true;
-      };
-    };
+    programs.steam.enable = true;
   };
 }
