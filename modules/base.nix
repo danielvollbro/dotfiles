@@ -2,11 +2,10 @@
 
 {
   imports = [
-    ./software/applications/nvim.nix
-    ./software/desktops/_init.nix
-    ./software/network/_init.nix
-    ./software/stacks/development.nix
+    ./software/_init.nix
   ];
+
+  applications.nvim.enable = true;
 
   # Shell Aliases
   environment.shellAliases = {

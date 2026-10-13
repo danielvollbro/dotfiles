@@ -1,11 +1,9 @@
-{ pkgs, username, ... }:
+{ ... }:
 
 {
   imports = [
     ../../modules/base.nix
     ../../modules/hardware/gpu/rtx3070.nix
-    ../../modules/software/applications/krfb.nix
-    ../../modules/software/applications/sunshine.nix
     ../../modules/software/stacks/gaming.nix
     ./hardware-configuration.nix
   ];
@@ -14,6 +12,11 @@
     enable = true;
     autoLogin = true;
     disableDirectScanOut = true;
+  };
+
+  applications = {
+    krfb.enable = true;
+    sunshine.enable = true;
   };
 
   # Enable gaming software

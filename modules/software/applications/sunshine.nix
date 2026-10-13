@@ -1,27 +1,36 @@
-{ pkgs, username, ... }:
-
-{
-  services.sunshine = {
-    enable = true;
-    autoStart = true;
-    openFirewall = true;
-    capSysAdmin = true;
-    package = pkgs.sunshine.override { cudaSupport = true; };
+{ lib, config, pkgs, username, ... }:
+with lib;
+let
+  cfg = config.applications;
+in {
+  options.applications.sunshine.enable = mkOption {
+    type = types.bool;
+    default = false;
   };
 
-  hardware.uinput.enable = true;
+  config = mkIf cfg.sunshine.enable {
+    services.sunshine = {
+      enable = true;
+      autoStart = true;
+      openFirewall = true;
+      capSysAdmin = true;
+      package = pkgs.sunshine.override { cudaSupport = true; };
+    };
 
-  users.users.${username} = {
-    extraGroups = [ "uinput" ];
-  };
+    hardware.uinput.enable = true;
 
-  home-manager.users.${username} = { ... }: {
-    xdg.configFile = {
-      "sunshine/apps.json" = {
-        source = ../../../../home/dotfiles/sunshine/apps.json;
-      };
-      "sunshine/sunshine.conf" = {
-        source = ../../../../home/dotfiles/sunshine/sunshine.conf;
+    users.users.${username} = {
+      extraGroups = [ "uinput" ];
+    };
+
+    home-manager.users.${username} = { ... }: {
+      xdg.configFile = {
+        "sunshine/apps.json" = {
+          source = ../../../../home/dotfiles/sunshine/apps.json;
+        };
+        "sunshine/sunshine.conf" = {
+          source = ../../../../home/dotfiles/sunshine/sunshine.conf;
+        };
       };
     };
   };
