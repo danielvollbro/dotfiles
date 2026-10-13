@@ -8,11 +8,11 @@ in {
       type = types.bool;
       default = false;
     };
-    disable_direct_scan-out = mkOption {
+    disableDirectScanOut = mkOption {
       type = types.bool;
       default = false;
     };
-    prevent_idle = mkOption {
+    preventIdle = mkOption {
       type = types.bool;
       default = false;
     };
@@ -20,7 +20,7 @@ in {
 
   config = {
     services = {
-      logind.settings.Login = mkIf cfg.prevent_idle {
+      logind.settings.Login = mkIf cfg.preventIdle {
         IdleAction = "ignore";
       };
 
@@ -40,11 +40,11 @@ in {
       };
     };
 
-    environment.sessionVariables = mkIf cfg.disable_direct_scan-out {
+    environment.sessionVariables = mkIf cfg.disableDirectScanOut {
       KWIN_DRM_NO_DIRECT_SCANOUT = "1";
     };
 
-    home-manager.users.${username}.xdg.configFile = mkIf cfg.prevent_idle {
+    home-manager.users.${username}.xdg.configFile = mkIf cfg.preventIdle {
       "powerdevilrc".text = ''
         [AC][DPMSControl]
         idleTime=0

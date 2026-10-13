@@ -13,7 +13,7 @@
 
   services.kde = {
     autoLogin = true;
-    disable_direct_scan-out = true;
+    disableDirectScanOut = true;
   };
 
   # Enable gaming software
