@@ -2,10 +2,10 @@
 
 {
   imports = [
-    ./softwares/applications/nvim.nix
-    ./softwares/network/ssh-access.nix
-    ./softwares/network/wakeOnLan.nix
-    ./softwares/stacks/development.nix
+    ./software/applications/nvim.nix
+    ./software/network/ssh-access.nix
+    ./software/network/wakeOnLan.nix
+    ./software/stacks/development.nix
   ];
 
   # Shell Aliases
