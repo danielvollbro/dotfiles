@@ -7,7 +7,6 @@
     ../../modules/softwares/applications/krfb/main.nix
     ../../modules/softwares/applications/sunshine/main.nix
     ../../modules/softwares/desktop-environment/kde-plasma/main.nix
-    ../../modules/softwares/network/WOL/main.nix
     ../../modules/softwares/stacks/gaming/main.nix
     ./hardware-configuration.nix
   ];
@@ -24,6 +23,10 @@
   };
 
   network = {
+    wakeOnLan = {
+      enable = true;
+      nic = "enp5s0";
+    };
     allowSSHKeysAccess = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGC5gYdLzF4jUwLYega58MkYMTPVatL0oZGvCWgJB/Ip hermes-agent",
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJjzcieQ64SuEq6swAfKlt540QKNJs6wNIcmOEEs0Uya daniel@nixos"
