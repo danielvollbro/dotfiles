@@ -1,45 +1,33 @@
-{ pkgs, username, ... }:
-
-{
+{ pkgs, lib, config, username, ... }:
+with lib;
+let
+  cfg = config.development;
+in {
   imports = [
-    ../../applications/nvim.nix
+    ../applications/nvim.nix
+    ../applications/tmux.nix
+    ./development/docker.nix
+    ./development/go.nix
+    ./development/lua.nix
+    ./development/php.nix
+    ./development/terraform.nix
   ];
 
-  environment.systemPackages = with pkgs; [
-    docker
-  ];
+  options.development.enable = mkOption {
+    type = types.bool;
+    default = false;
+  };
 
-  home-manager.users.${username} = { pkgs, ... }: {
-    home.packages = with pkgs; [
-      # Development
-      go
-      gopls
-      tmux
-
-      # Language servers / dev tools
-      gotools
-      dockerfile-language-server-nodejs
-      docker-compose-language-service
-      terraform-ls
-      bash-language-server
-      intelephense
-      typescript-language-server
-      vscode-langservers-extracted  # html, cssls, jsonls
-      pyright
-      yaml-language-server
-      prettier
-      stylua
-      nixd
-      lua-language-server
-
-      # Formatters (conform.nvim) & nvim build deps
-      prettierd
-      ruff
-      shfmt
-      nixpkgs-fmt
-      gcc  # builds telescope-fzf-native
-      tree-sitter  # CLI needed by nvim-treesitter to build parsers
-      nodejs  # nvim-treesitter parser build toolchain
-    ];
+  config = mkIf cfg.enable {
+    home-manager.users.${username} = { pkgs, ... }: {
+      home.packages = with pkgs; [
+        # Language servers / dev tools
+        bash-language-server
+        typescript-language-server
+        vscode-langservers-extracted  # html, cssls, jsonls
+        pyright
+        yaml-language-server
+      ];
+    };
   };
 }

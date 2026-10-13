@@ -4,7 +4,6 @@
   imports = [
     ../../modules/base.nix
     ../../modules/softwares/desktop-environment/kde-plasma.nix
-    ../../modules/softwares/stacks/development.nix
     ./hardware-configuration.nix
   ];
 
@@ -14,6 +13,15 @@
       unzip
       sbctl
     ];
+  };
+
+  development = {
+    enable = true;
+
+    # Languages
+    go.enable = true;
+    terraform.enable = true;
+    docker.enable = true;
   };
 
   # Aggressive runtime power management (USB autosuspend, PCIe, audio codecs)
