@@ -3,7 +3,7 @@
 {
   imports = [
     ../../modules/base.nix
-    ../../modules/softwares/desktop-environment/kde-plasma.nix
+    ../../modules/software/desktop-environment/kde-plasma.nix
     ./hardware-configuration.nix
   ];
 

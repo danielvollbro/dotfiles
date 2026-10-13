@@ -4,10 +4,10 @@
   imports = [
     ../../modules/base.nix
     ../../modules/hardware/gpu/rtx3070.nix
-    ../../modules/softwares/applications/krfb.nix
-    ../../modules/softwares/applications/sunshine.nix
-    ../../modules/softwares/desktop-environment/kde-plasma.nix
-    ../../modules/softwares/stacks/gaming.nix
+    ../../modules/software/applications/krfb.nix
+    ../../modules/software/applications/sunshine.nix
+    ../../modules/software/desktop-environment/kde-plasma.nix
+    ../../modules/software/stacks/gaming.nix
     ./hardware-configuration.nix
   ];
 
