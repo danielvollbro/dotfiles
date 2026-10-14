@@ -60,7 +60,10 @@ BW_ITEM_NAME="${BW_ITEM_NAME:-master-age-key}"
 BW_LUKS_ITEM_NAME="${BW_LUKS_ITEM_NAME:-laptop-luks-passphrase}"
 BW_URL="${BW_URL:-https://vault.vollbro.se}"
 
-die() { echo "ERROR: $*" >&2; exit 1; }
+die() {
+  echo "ERROR: $*" >&2
+  exit 1
+}
 info() { echo "==> $*"; }
 
 [ "$(id -u)" -eq 0 ] || die "must run as root (sudo)"
@@ -68,15 +71,15 @@ info() { echo "==> $*"; }
 
 # --- host -> config mapping ------------------------------------------------
 case "$HOST" in
-  laptop)
-    DISKO_FILE="hosts/laptop/disko.nix"
-    NEEDS_MASTER_KEY=1
-    ;;
-  gaming-pc)
-    DISKO_FILE="hosts/gaming-pc/disko.nix"
-    NEEDS_MASTER_KEY=0
-    ;;
-  *) die "unknown host '$HOST' (known: laptop, gaming-pc)" ;;
+laptop)
+  DISKO_FILE="hosts/laptop/disko.nix"
+  NEEDS_MASTER_KEY=1
+  ;;
+gaming-pc)
+  DISKO_FILE="hosts/gaming-pc/disko.nix"
+  NEEDS_MASTER_KEY=0
+  ;;
+*) die "unknown host '$HOST' (known: laptop, gaming-pc)" ;;
 esac
 
 # --- 1. checkout ------------------------------------------------------------
@@ -88,8 +91,8 @@ if [ -d "$CHECKOUT/.git" ]; then
   # a destructive disko run is coming right up — never proceed on a stale or
   # locally-modified tree silently. Hard-reset to the remote default branch.
   DEFAULT_BRANCH="$(git -C "$CHECKOUT" remote show origin | sed -n 's/.*HEAD branch: //p')"
-  git -C "$CHECKOUT" reset --hard "origin/${DEFAULT_BRANCH:-main}" \
-    || die "could not fast-forward $CHECKOUT to origin/${DEFAULT_BRANCH:-main} — fix or delete $CHECKOUT and re-run"
+  git -C "$CHECKOUT" reset --hard "origin/${DEFAULT_BRANCH:-main}" ||
+    die "could not fast-forward $CHECKOUT to origin/${DEFAULT_BRANCH:-main} — fix or delete $CHECKOUT and re-run"
 else
   info "cloning $REPO_URL to $CHECKOUT"
   git clone "$REPO_URL" "$CHECKOUT"
@@ -123,22 +126,32 @@ if [ "$NEEDS_MASTER_KEY" -eq 1 ]; then
     # master password, and (if enabled) the 2FA code — all handled by the
     # CLI itself, nothing scripted around it. `--raw` makes it print just
     # the session key on success (nothing captured on failure).
-    BW_SESSION="$(bw login --raw)" \
-      || die "bw login failed (wrong credentials/2FA, or Vaultwarden unreachable at $BW_URL?) — disk not touched yet"
+    BW_SESSION="$(bw login --raw)" ||
+      die "bw login failed (wrong credentials/2FA, or Vaultwarden unreachable at $BW_URL?) — disk not touched yet"
 
     KEY_TMP="$(mktemp)"
-    bw get notes "$BW_ITEM_NAME" --session "$BW_SESSION" > "$KEY_TMP" \
-      || { bw logout >/dev/null 2>&1 || true; unset BW_SESSION; rm -f "$KEY_TMP"; die "could not read notes of item '$BW_ITEM_NAME' — disk not touched yet"; }
+    bw get notes "$BW_ITEM_NAME" --session "$BW_SESSION" >"$KEY_TMP" ||
+      {
+        bw logout >/dev/null 2>&1 || true
+        unset BW_SESSION
+        rm -f "$KEY_TMP"
+        die "could not read notes of item '$BW_ITEM_NAME' — disk not touched yet"
+      }
     chmod 600 "$KEY_TMP"
-    [ -s "$KEY_TMP" ] || { bw logout >/dev/null 2>&1 || true; rm -f "$KEY_TMP"; die "item '$BW_ITEM_NAME' has an empty notes field — disk not touched yet"; }
+    [ -s "$KEY_TMP" ] || {
+      bw logout >/dev/null 2>&1 || true
+      rm -f "$KEY_TMP"
+      die "item '$BW_ITEM_NAME' has an empty notes field — disk not touched yet"
+    }
     KEY_SRC="$KEY_TMP"
 
     # Same Vaultwarden session also provides the LUKS passphrase, if saved —
     # one login instead of two. Purely optional: a missing/empty note just
     # falls through to the interactive retry-loop prompt below, same as if
     # Vaultwarden weren't involved at all.
-    ( umask 077
-      bw get notes "$BW_LUKS_ITEM_NAME" --session "$BW_SESSION" > "$LUKS_KEY_FILE" 2>/dev/null
+    (
+      umask 077
+      bw get notes "$BW_LUKS_ITEM_NAME" --session "$BW_SESSION" >"$LUKS_KEY_FILE" 2>/dev/null
     ) || true
     if [ -s "$LUKS_KEY_FILE" ]; then
       info "using LUKS passphrase from Vaultwarden item '$BW_LUKS_ITEM_NAME'"
@@ -159,7 +172,11 @@ echo "  host:    $HOST"
 echo "  disko:   $DISKO_FILE"
 echo "============================================================"
 read -r -p "Type 'destroy' to continue: " ANSWER
-[ "$ANSWER" = "destroy" ] || { [ -n "$KEY_TMP" ] && rm -f "$KEY_TMP"; rm -f "$LUKS_KEY_FILE"; die "aborted"; }
+[ "$ANSWER" = "destroy" ] || {
+  [ -n "$KEY_TMP" ] && rm -f "$KEY_TMP"
+  rm -f "$LUKS_KEY_FILE"
+  die "aborted"
+}
 
 info "running disko (partition + format + mount)"
 if [ ! -s "$LUKS_KEY_FILE" ]; then
@@ -169,12 +186,15 @@ if [ ! -s "$LUKS_KEY_FILE" ]; then
   # a typo. A single mismatch used to abort the whole install — with the disk
   # already wiped, since disko's own prompt comes mid-operation. This way a
   # mismatch just loops back to try again, nothing touched yet.
-  ( umask 077
+  (
+    umask 077
     while true; do
-      read -r -s -p "Enter LUKS passphrase (used for both root and swap): " LUKS_PASS_1; echo
-      read -r -s -p "Re-enter to confirm: " LUKS_PASS_2; echo
+      read -r -s -p "Enter LUKS passphrase (used for both root and swap): " LUKS_PASS_1
+      echo
+      read -r -s -p "Re-enter to confirm: " LUKS_PASS_2
+      echo
       if [ "$LUKS_PASS_1" = "$LUKS_PASS_2" ] && [ -n "$LUKS_PASS_1" ]; then
-        printf '%s' "$LUKS_PASS_1" > "$LUKS_KEY_FILE"
+        printf '%s' "$LUKS_PASS_1" >"$LUKS_KEY_FILE"
         break
       fi
       echo "Passphrases did not match (or were empty) — try again." >&2
@@ -219,8 +239,8 @@ if [ "$HOST" = "laptop" ]; then
   # non-interactively (same passphrase disko used to format cryptswap),
   # instead of prompting again for something already typed once this run.
   info "adding the swap keyfile using the LUKS passphrase collected earlier (no prompt)"
-  cryptsetup luksAddKey --key-file "$LUKS_KEY_FILE" "$SWAP_PART" "$SWAP_KEY_DST" \
-    || die "could not add keyfile to $SWAP_PART — check the partition exists and the LUKS header is intact"
+  cryptsetup luksAddKey --key-file "$LUKS_KEY_FILE" "$SWAP_PART" "$SWAP_KEY_DST" ||
+    die "could not add keyfile to $SWAP_PART — check the partition exists and the LUKS header is intact"
   info "swap keyfile enrolled"
 fi
 shred -u "$LUKS_KEY_FILE" 2>/dev/null || rm -f "$LUKS_KEY_FILE"
@@ -243,18 +263,7 @@ fi
 # --- 5. install --------------------------------------------------------------
 info "running nixos-install for $HOST"
 CURRENT_STEP="nixos-install (building/installing the system)"
-NIXOS_INSTALL_ARGS=(--flake ".#$HOST")
-if [ "$HOST" = "laptop" ]; then
-  # --no-root-passwd: skip nixos-install's own interactive root password
-  # prompt entirely. Only safe where a real login path already exists
-  # without it — laptop's user password is set declaratively via sops
-  # (USER_PASSWORD_HASH) and root login is disabled everywhere anyway
-  # (PermitRootLogin "no", no password SSH auth). gaming-pc has no such
-  # secret yet and still relies on the manual root/passwd flow from the
-  # README, so it keeps the interactive prompt.
-  NIXOS_INSTALL_ARGS+=(--no-root-passwd)
-fi
-nixos-install "${NIXOS_INSTALL_ARGS[@]}"
+nixos-install --flake ".#$HOST" --no-root-passwd
 
 info "install finished. Rebooting in 10s (Ctrl-C to cancel and stay in the installer)..."
 sleep 10
