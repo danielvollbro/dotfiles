@@ -73,11 +73,9 @@ info() { echo "==> $*"; }
 case "$HOST" in
 laptop)
   DISKO_FILE="hosts/laptop/disko.nix"
-  NEEDS_MASTER_KEY=1
   ;;
 gaming-pc)
   DISKO_FILE="hosts/gaming-pc/disko.nix"
-  NEEDS_MASTER_KEY=0
   ;;
 *) die "unknown host '$HOST' (known: laptop, gaming-pc)" ;;
 esac
@@ -107,61 +105,59 @@ CURRENT_STEP="fetching secrets from Vaultwarden"
 KEY_TMP=""
 LUKS_KEY_FILE="/tmp/disko-luks.key"
 rm -f "$LUKS_KEY_FILE"
-if [ "$NEEDS_MASTER_KEY" -eq 1 ]; then
-  KEY_SRC=""
-  if [ -n "${BW_KEY_FILE:-}" ] && [ -f "$BW_KEY_FILE" ]; then
-    KEY_SRC="$BW_KEY_FILE"
-    info "using key from BW_KEY_FILE=$BW_KEY_FILE"
-  else
-    command -v bw >/dev/null || die "bitwarden CLI not found in PATH"
-    info "logging in to Vaultwarden ($BW_URL)"
-    bw config server "$BW_URL" >/dev/null
-    # Pre-emptive logout: if a previous run crashed between login and
-    # logout (e.g. this same boot session, script re-run after a failure
-    # further down), bw would otherwise refuse a second `bw login` with
-    # "You are already logged in as X." Guarantee a clean slate.
-    bw logout >/dev/null 2>&1 || true
+KEY_SRC=""
+if [ -n "${BW_KEY_FILE:-}" ] && [ -f "$BW_KEY_FILE" ]; then
+  KEY_SRC="$BW_KEY_FILE"
+  info "using key from BW_KEY_FILE=$BW_KEY_FILE"
+else
+  command -v bw >/dev/null || die "bitwarden CLI not found in PATH"
+  info "logging in to Vaultwarden ($BW_URL)"
+  bw config server "$BW_URL" >/dev/null
+  # Pre-emptive logout: if a previous run crashed between login and
+  # logout (e.g. this same boot session, script re-run after a failure
+  # further down), bw would otherwise refuse a second `bw login` with
+  # "You are already logged in as X." Guarantee a clean slate.
+  bw logout >/dev/null 2>&1 || true
 
-    # `bw login` runs fully interactively here: it prompts for email,
-    # master password, and (if enabled) the 2FA code — all handled by the
-    # CLI itself, nothing scripted around it. `--raw` makes it print just
-    # the session key on success (nothing captured on failure).
-    BW_SESSION="$(bw login --raw)" ||
-      die "bw login failed (wrong credentials/2FA, or Vaultwarden unreachable at $BW_URL?) — disk not touched yet"
+  # `bw login` runs fully interactively here: it prompts for email,
+  # master password, and (if enabled) the 2FA code — all handled by the
+  # CLI itself, nothing scripted around it. `--raw` makes it print just
+  # the session key on success (nothing captured on failure).
+  BW_SESSION="$(bw login --raw)" ||
+    die "bw login failed (wrong credentials/2FA, or Vaultwarden unreachable at $BW_URL?) — disk not touched yet"
 
-    KEY_TMP="$(mktemp)"
-    bw get notes "$BW_ITEM_NAME" --session "$BW_SESSION" >"$KEY_TMP" ||
-      {
-        bw logout >/dev/null 2>&1 || true
-        unset BW_SESSION
-        rm -f "$KEY_TMP"
-        die "could not read notes of item '$BW_ITEM_NAME' — disk not touched yet"
-      }
-    chmod 600 "$KEY_TMP"
-    [ -s "$KEY_TMP" ] || {
+  KEY_TMP="$(mktemp)"
+  bw get notes "$BW_ITEM_NAME" --session "$BW_SESSION" >"$KEY_TMP" ||
+    {
       bw logout >/dev/null 2>&1 || true
+      unset BW_SESSION
       rm -f "$KEY_TMP"
-      die "item '$BW_ITEM_NAME' has an empty notes field — disk not touched yet"
+      die "could not read notes of item '$BW_ITEM_NAME' — disk not touched yet"
     }
-    KEY_SRC="$KEY_TMP"
-
-    # Same Vaultwarden session also provides the LUKS passphrase, if saved —
-    # one login instead of two. Purely optional: a missing/empty note just
-    # falls through to the interactive retry-loop prompt below, same as if
-    # Vaultwarden weren't involved at all.
-    (
-      umask 077
-      bw get notes "$BW_LUKS_ITEM_NAME" --session "$BW_SESSION" >"$LUKS_KEY_FILE" 2>/dev/null
-    ) || true
-    if [ -s "$LUKS_KEY_FILE" ]; then
-      info "using LUKS passphrase from Vaultwarden item '$BW_LUKS_ITEM_NAME'"
-    else
-      rm -f "$LUKS_KEY_FILE"
-    fi
-
+  chmod 600 "$KEY_TMP"
+  [ -s "$KEY_TMP" ] || {
     bw logout >/dev/null 2>&1 || true
-    unset BW_SESSION
+    rm -f "$KEY_TMP"
+    die "item '$BW_ITEM_NAME' has an empty notes field — disk not touched yet"
+  }
+  KEY_SRC="$KEY_TMP"
+
+  # Same Vaultwarden session also provides the LUKS passphrase, if saved —
+  # one login instead of two. Purely optional: a missing/empty note just
+  # falls through to the interactive retry-loop prompt below, same as if
+  # Vaultwarden weren't involved at all.
+  (
+    umask 077
+    bw get notes "$BW_LUKS_ITEM_NAME" --session "$BW_SESSION" >"$LUKS_KEY_FILE" 2>/dev/null
+  ) || true
+  if [ -s "$LUKS_KEY_FILE" ]; then
+    info "using LUKS passphrase from Vaultwarden item '$BW_LUKS_ITEM_NAME'"
+  else
+    rm -f "$LUKS_KEY_FILE"
   fi
+
+  bw logout >/dev/null 2>&1 || true
+  unset BW_SESSION
 fi
 
 # --- 3. disko ---------------------------------------------------------------
@@ -247,17 +243,15 @@ shred -u "$LUKS_KEY_FILE" 2>/dev/null || rm -f "$LUKS_KEY_FILE"
 
 # --- 4. place master key -----------------------------------------------------
 CURRENT_STEP="placing the master key onto the new install"
-if [ "$NEEDS_MASTER_KEY" -eq 1 ]; then
-  if [ -f "$KEY_DST" ]; then
-    info "master key already in place at $KEY_DST"
-  else
-    info "placing master key at $KEY_DST"
-    mkdir -p "$(dirname "$KEY_DST")"
-    cp "$KEY_SRC" "$KEY_DST"
-    chmod 700 "$(dirname "$KEY_DST")"
-    chmod 600 "$KEY_DST"
-    [ -n "$KEY_TMP" ] && rm -f "$KEY_TMP"
-  fi
+if [ -f "$KEY_DST" ]; then
+  info "master key already in place at $KEY_DST"
+else
+  info "placing master key at $KEY_DST"
+  mkdir -p "$(dirname "$KEY_DST")"
+  cp "$KEY_SRC" "$KEY_DST"
+  chmod 700 "$(dirname "$KEY_DST")"
+  chmod 600 "$KEY_DST"
+  [ -n "$KEY_TMP" ] && rm -f "$KEY_TMP"
 fi
 
 # --- 5. install --------------------------------------------------------------
