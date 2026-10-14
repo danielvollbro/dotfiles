@@ -172,7 +172,7 @@
       config.vars.sshKeys.hermes-agent
     ];
     allowIPAccess = ''
-      iptables -A nixos-fw -p tcp --dport 22 -s 10.0.50.20 -j ACCEPT
+      iptables -A nixos-fw -p tcp --dport 22 -s ${config.vars.hosts.docker-debian.ip} -j ACCEPT
     '';
   };
 

@@ -34,9 +34,9 @@
       config.vars.sshKeys.daniel-laptop
     ];
     allowIPAccess = ''
-      iptables -A nixos-fw -p tcp --dport 22 -s 10.0.50.20 -j ACCEPT
-      iptables -A nixos-fw -p tcp --dport 22 -s 10.0.10.16 -j ACCEPT
-      iptables -A nixos-fw -p tcp --dport 47990 -s 10.0.50.50 -j ACCEPT
+      iptables -A nixos-fw -p tcp --dport 22 -s ${config.vars.hosts.docker-debian.ip} -j ACCEPT
+      iptables -A nixos-fw -p tcp --dport 22 -s ${config.vars.hosts.laptop.ip} -j ACCEPT
+      iptables -A nixos-fw -p tcp --dport 47990 -s ${config.vars.hosts.docker-debian.ip} -j ACCEPT
     '';
   };
 
