@@ -31,7 +31,7 @@
     };
     allowSSHKeysAccess = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGC5gYdLzF4jUwLYega58MkYMTPVatL0oZGvCWgJB/Ip hermes-agent"
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJjzcieQ64SuEq6swAfKlt540QKNJs6wNIcmOEEs0Uya daniel@nixos"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKwN98v7Gvrmw8uh6L5HAOVOcDcLffdRBmWLgHDP2chj daniel@daniel-laptop"
     ];
     allowIPAccess = ''
       iptables -A nixos-fw -p tcp --dport 22 -s 10.0.50.20 -j ACCEPT
