@@ -17,7 +17,7 @@ in {
       ];
 
       xdg.configFile = {
-        "nvim/after/ftplugin/go.lua".source = ../../../../home/dotfiles/nvim/after/ftplugin/go.lua;
+        "nvim/after/ftplugin/go.lua".source = ./dotfiles/after/ftplugin/go.lua;
       };
     };
   };

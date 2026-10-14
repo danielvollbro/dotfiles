@@ -3,6 +3,14 @@ with lib;
 let
   cfg = config.development;
 in {
+  imports = [
+    ./docker/default.nix
+    ./go/default.nix
+    ./lua/default.nix
+    ./php/default.nix
+    ./terraform/default.nix
+  ];
+
   options.development.enable = mkOption {
     type = types.bool;
     default = false;
