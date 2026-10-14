@@ -26,7 +26,7 @@ with lib;
     hosts = {
       gaming-pc.ip      = "10.0.10.140";
       laptop.ip         = "10.0.10.16";
-      docker-debian.ip  = "10.0.50.20";
+      docker-debian.ip  = "10.0.50.50";
     };
   };
 }
