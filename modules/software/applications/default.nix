@@ -1,10 +1,10 @@
 { ... }:
 {
   imports = [
-    ./krfb.nix
-    ./moonshine.nix
-    ./nvim.nix
-    ./sunshine.nix
-    ./tmux.nix
+    ./krfb/default.nix
+    ./moonshine/default.nix
+    ./nvim/default.nix
+    ./sunshine/default.nix
+    ./tmux/default.nix
   ];
 }
