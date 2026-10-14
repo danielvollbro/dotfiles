@@ -3,10 +3,7 @@ with lib;
 let
   cfg = config.development.go;
 in {
-  options.development.go.enable = mkOption {
-    type = types.bool;
-    default = false;
-  };
+  options.development.go.enable = mkEnableOption "Go LSP";
 
   config = mkIf cfg.enable {
     home-manager.users.${config.host.username} = { pkgs, ... }: {

@@ -3,10 +3,7 @@ with lib;
 let
   cfg = config.development.terraform;
 in {
-  options.development.terraform.enable = mkOption {
-    type = types.bool;
-    default = false;
-  };
+  options.development.terraform.enable = mkEnableOption "Terraform LSP";
 
   config = mkIf cfg.enable {
     home-manager.users.${config.host.username} = { pkgs, ... }: {

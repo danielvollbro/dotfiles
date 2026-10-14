@@ -4,10 +4,7 @@ let
   cfg = config.network;
 in {
   options.network.wakeOnLan = {
-    enable = mkOption {
-      type = types.bool;
-      default = false;
-    };
+    enable = mkEnableOption "wakeOnLan";
     nic = mkOption {
       type = types.str;
       default = "";

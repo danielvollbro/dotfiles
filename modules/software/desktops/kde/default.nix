@@ -4,22 +4,10 @@ let
   cfg = config.desktops.kde;
 in {
   options.desktops.kde = {
-    enable = mkOption {
-      type = types.bool;
-      default = false;
-    };
-    autoLogin = mkOption {
-      type = types.bool;
-      default = false;
-    };
-    disableDirectScanOut = mkOption {
-      type = types.bool;
-      default = false;
-    };
-    preventIdle = mkOption {
-      type = types.bool;
-      default = false;
-    };
+    enable = mkEnableOption "kde plasma 6";
+    autoLogin = mkEnableOption "auto login";
+    disableDirectScanOut = mkEnableOption "disable direct scan out";
+    preventIdle = mkEnableOption "prevent computer to idle";
   };
 
   config = mkIf cfg.enable {

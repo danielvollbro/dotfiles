@@ -11,10 +11,7 @@ in {
     ./terraform/default.nix
   ];
 
-  options.development.enable = mkOption {
-    type = types.bool;
-    default = false;
-  };
+  options.development.enable = mkEnableOption "development";
 
   config = mkIf cfg.enable {
     # Make sure nvim and tmux is enabled

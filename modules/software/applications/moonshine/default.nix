@@ -5,10 +5,7 @@ let
 in {
   imports = [ inputs.moonshine.nixosModules.default ];
 
-  options.applications.moonshine.enable = mkOption {
-    type = types.bool;
-    default = false;
-  };
+  options.applications.moonshine.enable = mkEnableOption "Moonshine";
 
   config = mkIf cfg.moonshine.enable {
     services.moonshine = {
