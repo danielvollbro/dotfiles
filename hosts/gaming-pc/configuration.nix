@@ -36,6 +36,7 @@
     allowIPAccess = ''
       iptables -A nixos-fw -p tcp --dport 22 -s 10.0.50.20 -j ACCEPT
       iptables -A nixos-fw -p tcp --dport 22 -s 10.0.10.16 -j ACCEPT
+      iptables -A nixos-fw -p tcp --dport 47990 -s 10.0.50.50 -j ACCEPT
     '';
   };
 
@@ -53,23 +54,11 @@
     defaultSopsFile = ./secrets.yaml;
     validateSopsFiles = true;
 
-    age.sshKeyPaths = [
-      "/etc/ssh/ssh_host_ed25519_key"
-      "/home/${config.host.username}/.ssh/id_ed25519"
-    ];
+    age.keyFile = "/var/lib/sops/age/master.key";
 
     secrets = {
-      SSH_HOST_ED25519_KEY = {
-        path = "/etc/ssh/ssh_host_ed25519_key";
-        owner = "root";
-        group = "root";
-        mode = "0600";
-      };
-      SSH_HOST_ED25519_PUB_KEY = {
-        path = "/etc/ssh/ssh_host_ed25519_key.pub";
-        owner = "root";
-        group = "root";
-        mode = "0644";
+      USER_PASSWORD_HASH = {
+        neededForUsers = true;
       };
     };
   };
