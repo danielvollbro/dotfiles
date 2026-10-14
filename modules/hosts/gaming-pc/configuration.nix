@@ -2,8 +2,8 @@
 
 {
   imports = [
-    ../../modules/base.nix
-    ../../modules/hardware/gpu/rtx3070.nix
+    ../../base.nix
+    ../../hardware/gpu/rtx3070.nix
     ./hardware-configuration.nix
   ];
 

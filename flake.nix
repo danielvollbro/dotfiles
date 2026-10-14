@@ -53,7 +53,7 @@
       specialArgs = { inherit inputs; };
       modules = [
         nixos-hardware.nixosModules.dell-xps-13-9370
-        ./hosts/laptop/configuration.nix
+        ./modules/hosts/laptop/configuration.nix
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
@@ -67,7 +67,7 @@
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
       modules = [
-        ./hosts/gaming-pc/configuration.nix
+        ./modules/hosts/gaming-pc/configuration.nix
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
