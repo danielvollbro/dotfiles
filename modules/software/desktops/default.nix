@@ -1,7 +1,7 @@
 { ... }:
 {
   imports = [
-    ./kde.nix
-    ./hyprland.nix
+    ./kde/default.nix
+    ./hyprland/default.nix
   ];
 }

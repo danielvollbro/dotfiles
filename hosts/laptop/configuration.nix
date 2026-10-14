@@ -22,9 +22,6 @@
       moonlight-qt
       discord
     ];
-
-    # Wallpaper (used by swww + hyprlock)
-    xdg.configFile."wallpapers/japan-night.jpg".source = ../../home/wallpapers/japan-night.jpg;
   };
 
 

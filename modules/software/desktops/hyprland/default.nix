@@ -45,31 +45,34 @@ in {
 
     home-manager.users.${config.host.username} = { ... }: {
       # Waybar
-      xdg.configFile."waybar/config".source = ../../home/dotfiles/waybar/config;
-      xdg.configFile."waybar/style.css".source = ../../home/dotfiles/waybar/style.css;
+      xdg.configFile."waybar/config".source = ./dotfiles/waybar/config;
+      xdg.configFile."waybar/style.css".source = ./dotfiles/waybar/style.css;
       xdg.configFile."waybar/sysinfo.sh" = {
-        source = ../../home/dotfiles/waybar/sysinfo.sh;
+        source = ./dotfiles/waybar/sysinfo.sh;
         executable = true;
       };
       xdg.configFile."waybar/idle_state.sh" = {
-        source = ../../home/dotfiles/waybar/idle_state.sh;
+        source = ./dotfiles/waybar/idle_state.sh;
         executable = true;
       };
 
       # Kanshi
-      xdg.configFile."kanshi/config".source = ../../home/dotfiles/kanshi/config;
+      xdg.configFile."kanshi/config".source = ./dotfiles/kanshi/config;
 
       # Mako
-      xdg.configFile."mako/config".source = ../../home/dotfiles/mako/config;
+      xdg.configFile."mako/config".source = ./dotfiles/mako/config;
 
       # Rofi
-      xdg.configFile."rofi/config.rasi".source = ../../home/dotfiles/rofi/config.rasi;
-      xdg.configFile."rofi/rofi.warm.rasi".source = ../../home/dotfiles/rofi/rofi.warm.rasi;
+      xdg.configFile."rofi/config.rasi".source = ./dotfiles/rofi/config.rasi;
+      xdg.configFile."rofi/rofi.warm.rasi".source = ./dotfiles/rofi/rofi.warm.rasi;
 
       # Hyprland
-      xdg.configFile."hypr/hyprland.conf".source = ../../home/dotfiles/hyprland/hyprland.conf;
-      xdg.configFile."hypr/hyprlock.conf".source = ../../home/dotfiles/hyprland/hyprlock.conf;
-      xdg.configFile."hypr/hypridle.conf".source = ../../home/dotfiles/hyprland/hypridle.conf;
+      xdg.configFile."hypr/hyprland.conf".source = ./dotfiles/hyprland/hyprland.conf;
+      xdg.configFile."hypr/hyprlock.conf".source = ./dotfiles/hyprland/hyprlock.conf;
+      xdg.configFile."hypr/hypridle.conf".source = ./dotfiles/hyprland/hypridle.conf;
+
+      # Wallpaper (used by swww + hyprlock)
+      xdg.configFile."wallpapers/japan-night.jpg".source = ./wallpapers/japan-night.jpg;
     };
   };
 }
