@@ -3,6 +3,10 @@ with lib;
 let
   cfg = config.applications;
 in {
+  imports = [
+    ./development/default.nix
+  ];
+  
   options.applications.nvim.enable = mkOption {
     type = types.bool;
     default = false;
