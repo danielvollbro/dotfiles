@@ -4,7 +4,7 @@ let
   cfg = config.host;
 in {
   imports = [
-    ./software/_init.nix
+    ./software/default.nix
   ];
 
   options.host.username = mkOption {
