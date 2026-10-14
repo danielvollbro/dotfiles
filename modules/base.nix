@@ -5,6 +5,7 @@ let
 in {
   imports = [
     ./software/default.nix
+    ./vars/default.nix
   ];
 
   options.host.username = mkOption {
