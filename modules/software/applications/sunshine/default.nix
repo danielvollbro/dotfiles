@@ -3,10 +3,7 @@ with lib;
 let
   cfg = config.applications;
 in {
-  options.applications.sunshine.enable = mkOption {
-    type = types.bool;
-    default = false;
-  };
+  options.applications.sunshine.enable = mkEnableOption "Sunshine";
 
   config = mkIf cfg.sunshine.enable {
     services.sunshine = {

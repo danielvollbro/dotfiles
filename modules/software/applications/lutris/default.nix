@@ -3,14 +3,7 @@ with lib;
 let
   cfg = config.gaming;
 in {
-  options = {
-    gaming = {
-      enableLutris = mkOption {
-        type = types.bool;
-        default = false;
-      };
-    };
-  };
+  options.gaming.enableLutris = mkEnableOption "Lutris";
 
   config = mkIf cfg.enableLutris {
     home-manager.users.${config.host.username} = { pkgs, ... }: {

@@ -3,10 +3,7 @@ with lib;
 let
   cfg = config.development.php;
 in {
-  options.development.php.enable = mkOption {
-    type = types.bool;
-    default = false;
-  };
+  options.development.php.enable = mkEnableOption "PHP LSP";
 
   config = mkIf cfg.enable {
     home-manager.users.${config.host.username} = { pkgs, ... }: {

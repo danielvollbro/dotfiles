@@ -7,10 +7,7 @@ in {
     ./development/default.nix
   ];
   
-  options.applications.nvim.enable = mkOption {
-    type = types.bool;
-    default = false;
-  };
+  options.applications.nvim.enable = mkEnableOption "NVim";
 
   config = mkIf cfg.nvim.enable {
     home-manager.users.${config.host.username} = { pkgs, ... }: {

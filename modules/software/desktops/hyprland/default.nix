@@ -3,10 +3,7 @@ with lib;
 let
   cfg = config.desktops;
 in {
-  options.desktops.hyprland.enable = mkOption {
-    type = types.bool;
-    default = false;
-  };
+  options.desktops.hyprland.enable = mkEnableOption "Hyprland";
 
   config = mkIf cfg.hyprland.enable {
     environment.systemPackages = with pkgs; [

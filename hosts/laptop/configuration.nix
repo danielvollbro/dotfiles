@@ -24,6 +24,9 @@
     ];
   };
 
+  virtualisation = {
+    docker.enable = true;
+  };
 
   desktops.kde.enable = true;
 
