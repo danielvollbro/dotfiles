@@ -30,6 +30,7 @@ in {
         };
         "sunshine/sunshine-switch-mode.sh" = {
           source = ./dotfiles/sunshine-switch-mode.sh;
+          executable = true;
         };
       };
     };
