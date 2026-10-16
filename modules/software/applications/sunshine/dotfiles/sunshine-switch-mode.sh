@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Sunshine global_prep_cmd: switch the display mode via kscreen-doctor.
 #
 # Sunshine runs this without a shell and without argument expansion, so the
