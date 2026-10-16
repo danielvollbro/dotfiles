@@ -28,7 +28,17 @@ in {
         "sunshine/sunshine.conf" = {
           source = ./dotfiles/sunshine.conf;
         };
+        "sunshine/sunshine-do.sh" = {
+          source = ./dotfiles/sunshine-do.sh;
+        };
+        "sunshine/sunshine-undo.sh" = {
+          source = ./dotfiles/sunshine-undo.sh;
+        };
       };
     };
+
+    # The Do/Undo commands are referenced in sunshine.conf
+    # (do_cmd / undo_cmd) and switch the display to the client's resolution
+    # on connect, restoring 1080p on disconnect.
   };
 }
