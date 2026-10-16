@@ -35,7 +35,10 @@ fi
 export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u)/bus"
 export XDG_RUNTIME_DIR="/run/user/$(id -u)"
 
-# Best available mode: exact WxH, highest refresh <= requested FPS
+# Best available mode: exact WxH, highest refresh <= requested FPS.
+# If none matches at the requested refresh (e.g. client asks 60Hz but the
+# display only exposes 120Hz at that resolution), pick the same resolution
+# at the closest refresh instead of failing.
 MODE=$(kscreen-doctor -o 2>/dev/null | awk -v w="$W" -v h="$H" -v fps="$FPS" '
   /Output:/ {out=1}
   out && /Modes:/ {
@@ -45,14 +48,17 @@ MODE=$(kscreen-doctor -o 2>/dev/null | awk -v w="$W" -v h="$H" -v fps="$FPS" '
         split(a[2], b, "x")
         split(b[2], c, "@")
         mw = b[1] + 0; mh = c[1] + 0; mfps = c[2] + 0
-        if (mw == w && mh == h && mfps <= fps + 0.5 && mfps > best) {
-          best = mfps; modeid = a[1]
+        if (mw == w && mh == h) {
+          if (mfps <= fps + 0.5 && mfps > best) { best = mfps; modeid = a[1] }
+          if (anysize == "" || (mfps - fps) * (mfps - fps) < (anybest - fps) * (anybest - fps)) {
+            anysize = mw "x" mh; anybest = mfps; anyid = a[1]
+          }
         }
       }
     }
     exit
   }
-  END { print modeid, best }
+  END { if (modeid == "") { modeid = anyid; best = anybest } print modeid, best }
 ' -)
 MODEID="${MODE%% *}"
 BEST="${MODE##* }"
