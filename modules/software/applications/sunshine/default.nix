@@ -28,11 +28,8 @@ in {
         "sunshine/sunshine.conf" = {
           source = ./dotfiles/sunshine.conf;
         };
-        "sunshine/sunshine-do.sh" = {
-          source = ./dotfiles/sunshine-do.sh;
-        };
-        "sunshine/sunshine-undo.sh" = {
-          source = ./dotfiles/sunshine-undo.sh;
+        "sunshine/sunshine-switch-mode.sh" = {
+          source = ./dotfiles/sunshine-switch-mode.sh;
         };
       };
     };
