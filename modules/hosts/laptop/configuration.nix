@@ -24,8 +24,6 @@
     ];
   };
 
-  config.facter.reportPath = ./facter.json;
-
   virtualisation = {
     docker.enable = true;
   };
