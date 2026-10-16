@@ -13,6 +13,13 @@
     disableDirectScanOut = true;
   };
 
+  # Dummy DP plug for Sunshine: force a custom EDID with the resolutions
+  # requested by streaming clients (Pixel 10 Pro, LG 4K TV, XPS 13).
+  hardware.customEDID = {
+    enable = true;
+    connector = "DP-1";
+  };
+
   applications = {
     krfb.enable = true;
     sunshine.enable = true;
