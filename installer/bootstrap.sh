@@ -72,10 +72,10 @@ info() { echo "==> $*"; }
 # --- host -> config mapping ------------------------------------------------
 case "$HOST" in
 laptop)
-  DISKO_FILE="hosts/laptop/disko.nix"
+  DISKO_FILE="modules/hosts/laptop/disko.nix"
   ;;
 gaming-pc)
-  DISKO_FILE="hosts/gaming-pc/disko.nix"
+  DISKO_FILE="modules/hosts/gaming-pc/disko.nix"
   ;;
 *) die "unknown host '$HOST' (known: laptop, gaming-pc)" ;;
 esac
@@ -219,7 +219,7 @@ nix --experimental-features "nix-command flakes" run \
 # The laptop's encrypted swap (cryptswap) is NOT enrolled in the TPM — it is
 # unlocked with a keyfile on the (already TPM-unlocked) root filesystem,
 # declared as boot.initrd.luks.devices.cryptswap.keyFile in
-# hosts/laptop/hardware-configuration.nix. Generate that keyfile and add it
+# modules/hosts/laptop/hardware-configuration.nix. Generate that keyfile and add it
 # to the swap container's LUKS header right after disko, so the fresh
 # install boots with working, automatically-unlocked swap.
 if [ "$HOST" = "laptop" ]; then
