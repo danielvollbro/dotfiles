@@ -16,7 +16,14 @@ FALLBACK_W=1920
 FALLBACK_H=1080
 FALLBACK_FPS=60
 
-if [ -n "${SUNSHINE_CLIENT_WIDTH:-}" ] && [ -n "${SUNSHINE_CLIENT_HEIGHT:-}" ]; then
+# Debug: log invocation context
+echo "$(date +%T) argv=[$*] client=${SUNSHINE_CLIENT_WIDTH:-unset}x${SUNSHINE_CLIENT_HEIGHT:-unset}@${SUNSHINE_CLIENT_FPS:-unset}" >> /tmp/sunshine-mode-debug.log
+
+if [ "${1:-}" = "--fallback" ]; then
+    shift
+    W="$FALLBACK_W"; H="$FALLBACK_H"; FPS="$FALLBACK_FPS"
+    TAG="undo"
+elif [ -n "${SUNSHINE_CLIENT_WIDTH:-}" ] && [ -n "${SUNSHINE_CLIENT_HEIGHT:-}" ]; then
     W="$SUNSHINE_CLIENT_WIDTH"; H="$SUNSHINE_CLIENT_HEIGHT"
     FPS="${SUNSHINE_CLIENT_FPS:-$FALLBACK_FPS}"
     TAG="do"
