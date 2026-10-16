@@ -5,7 +5,13 @@
   "apps": [
     {
       "name": "Desktop",
-      "image-path": "desktop.png"
+      "image-path": "desktop.png",
+      "prep-cmd": [
+        {
+          "do": "/home/daniel/.config/sunshine/sunshine-switch-mode.sh",
+          "undo": "/home/daniel/.config/sunshine/sunshine-switch-mode.sh"
+        }
+      ]
     },
     {
       "name": "Low Res Desktop",
