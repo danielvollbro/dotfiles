@@ -5,13 +5,13 @@
   - &gaming_pc_ssh_host_key age164ygv05pcqp0x8vmjggvkafpht68zy6wsk897j368smelql7nutq0pdkcw
 
 creation_rules:
-  - path_regex: hosts/laptop/secrets.yaml$
+  - path_regex: modules/hosts/laptop/secrets.yaml$
     key_groups:
       - age:
           - *master_age_key
           - *laptop_ssh_host_key
           - *laptop_ssh_user_key
-  - path_regex: hosts/gaming-pc/secrets.yaml$
+  - path_regex: modules/hosts/gaming-pc/secrets.yaml$
     key_groups:
       - age:
           - *master_age_key
