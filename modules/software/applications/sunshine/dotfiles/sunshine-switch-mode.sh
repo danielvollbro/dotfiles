@@ -1,11 +1,10 @@
 #!/bin/bash
-# Sunshine do_cmd/undo_cmd: switch the display mode via kscreen-doctor.
+# Sunshine global_prep_cmd: switch the display mode via kscreen-doctor.
 #
-# Usage:
-#   sunshine-switch-mode.sh            -> fallback 1920x1080@60 (used as undo_cmd)
-#   sunshine-switch-mode.sh W H [FPS]  -> best mode at WxH with highest
-#                                         refresh <= FPS (used as do_cmd;
-#                                         W/H come from SUNSHINE_CLIENT_*)
+# Sunshine runs this without a shell and without argument expansion, so the
+# client resolution is read from the environment: when Sunshine launches a
+# session it sets SUNSHINE_CLIENT_WIDTH / _HEIGHT / _FPS (do), on disconnect
+# they are absent (undo) and the script falls back to 1920x1080@60.
 #
 # If no matching mode exists the script silently keeps the current mode, so
 # the stream always connects.
@@ -17,8 +16,9 @@ FALLBACK_W=1920
 FALLBACK_H=1080
 FALLBACK_FPS=60
 
-if [ $# -ge 2 ]; then
-    W="$1"; H="$2"; FPS="${3:-60}"
+if [ -n "${SUNSHINE_CLIENT_WIDTH:-}" ] && [ -n "${SUNSHINE_CLIENT_HEIGHT:-}" ]; then
+    W="$SUNSHINE_CLIENT_WIDTH"; H="$SUNSHINE_CLIENT_HEIGHT"
+    FPS="${SUNSHINE_CLIENT_FPS:-$FALLBACK_FPS}"
     TAG="do"
 else
     W="$FALLBACK_W"; H="$FALLBACK_H"; FPS="$FALLBACK_FPS"
