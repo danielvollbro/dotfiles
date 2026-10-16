@@ -26,6 +26,13 @@ in {
 
   config = mkIf cfg.enable {
     hardware.firmware = [ edidFile ];
-    boot.kernelParams = [ "drm.edid_firmware=${cfg.connector}:edid/g9.bin" ];
+    # On NVIDIA, drm.edid_firmware alone is not enough: the driver only
+    # enumerates modes from the EDID when the connector is force-enabled and
+    # KMS modeset/fbdev are on (modeset comes from hardware.nvidia.modesetting).
+    boot.kernelParams = [
+      "nvidia-drm.fbdev=1"
+      "video=${cfg.connector}:e"
+      "drm.edid_firmware=${cfg.connector}:edid/g9.bin"
+    ];
   };
 }
