@@ -19,11 +19,11 @@
     },
     {
       "name": "Steam Big Picture",
-      "detached": ["setsid steam steam://open/bigpicture"],
+      "detached": ["/home/daniel/.config/sunshine/steam-bp-wrapper.sh"],
       "prep-cmd": [
         {
           "do": "",
-          "undo": "setsid steam steam://close/bigpicture"
+          "undo": "steam steam://close/bigpicture"
         }
       ],
       "image-path": "steam.png"
