@@ -32,6 +32,10 @@ in {
           source = ./dotfiles/sunshine-switch-mode.sh;
           executable = true;
         };
+        "sunshine/steam-bp-wrapper.sh" = {
+          source = ./dotfiles/steam-bp-wrapper.sh;
+          executable = true;
+        };
       };
     };
 
