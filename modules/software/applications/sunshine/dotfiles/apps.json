@@ -5,13 +5,7 @@
   "apps": [
     {
       "name": "Desktop",
-      "image-path": "desktop.png",
-      "prep-cmd": [
-        {
-          "do": "/home/daniel/.config/sunshine/sunshine-switch-mode.sh",
-          "undo": "/home/daniel/.config/sunshine/sunshine-switch-mode.sh --fallback"
-        }
-      ]
+      "image-path": "desktop.png"
     },
     {
       "name": "Low Res Desktop",
@@ -25,9 +19,7 @@
     },
     {
       "name": "Steam Big Picture",
-      "detached": [
-        "setsid steam steam://open/bigpicture"
-      ],
+      "detached": ["setsid steam steam://open/bigpicture"],
       "prep-cmd": [
         {
           "do": "",
