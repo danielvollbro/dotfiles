@@ -19,7 +19,7 @@
     },
     {
       "name": "Steam Big Picture",
-      "detached": ["/home/daniel/.config/sunshine/steam-bp-wrapper.sh"],
+      "detached": ["steam steam://open/bigpicture"],
       "prep-cmd": [
         {
           "do": "",
